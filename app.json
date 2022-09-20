@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "KiMusic",
+    "description": "KiMusic: Best Listen moment design by Dathuynh",
+    "slug": "kimusic",
+    "owner": "dathuynh",
+    "privacy": "public",
+    "version": "0.0.1",
+    "platforms": [
+      "android",
+      "ios"
+    ],
+    "orientation": "portrait",
+    "primaryColor": "#181414",
+    "icon": "src/assets/icon.png",
+    "splash": {
+      "backgroundColor": "#181414",
+      "image": "src/assets/splash.png",
+      "resizeMode": "contain"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "versionCode": 50,
+      "package": "com.dathuynh.kimusic"
+    },
+    "ios": {
+      "buildNumber": "0.5.0",
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dathuynh.kimusic",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "audio"
+        ]
+      }
+    }
+  }
+}
