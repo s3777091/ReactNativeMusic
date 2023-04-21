@@ -1,7 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import {
-  FlatList,
   Image,
   StyleSheet,
   Text,
@@ -11,13 +10,15 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { colors, gStyle } from '../../constants';
 
+
+
+import { FlashList } from "@shopify/flash-list";
 import Context from '../../context';
 //Data ? Heading ? tagline ? IsBigThumbnail ? IsPodCast
 const AlbumNewsDays = ({
   ListData,
   heading,
   tagline,
-  IsBigThumbnail,
   IsPodCast
 }) => {
   const navigation = useNavigation();
@@ -29,7 +30,7 @@ const AlbumNewsDays = ({
       {heading && <Text style={styles.heading}>{heading}</Text>}
       {tagline && <Text style={styles.tagline}>{tagline}</Text>}
 
-      <FlatList
+      <FlashList
         initialNumToRender={4}
         contentContainerStyle={styles.containerContent}
         data={ListData}
@@ -40,6 +41,7 @@ const AlbumNewsDays = ({
           index
         })}
         removeClippedSubviews
+        estimatedItemSize={200}
         windowSize={50}
         keyExtractor={(item) => item.encodeId}
         renderItem={({ item }) => (
@@ -54,21 +56,18 @@ const AlbumNewsDays = ({
                     type: false,
                     title: item.title,
                     artist: item.artistsNames,
-                    release_data: item.releaseDate,
                     image: item.thumbnailM
                   });
                 }}
-                style={IsBigThumbnail ? styles.Big_item : styles.Small_item}
+                style={styles.itemDisplay}
               >
                 <View
-                  style={IsBigThumbnail ? styles.Big_image : styles.Small_image}
+                  style={styles.imageDisplay}
                 >
                   {item.thumbnail && (
                     <Image
                       source={{ uri: item.thumbnail }}
-                      style={
-                        IsBigThumbnail ? styles.Big_image : styles.Small_image
-                      }
+                      style={styles.imageDisplay}
                     />
                   )}
                 </View>
@@ -88,17 +87,15 @@ const AlbumNewsDays = ({
                     image: item.thumbnail
                   });
                 }}
-                style={IsBigThumbnail ? styles.Big_item : styles.Small_item}
+                style={styles.radio}
               >
                 <View
-                  style={IsBigThumbnail ? styles.Big_image : styles.Small_image}
+                  style={styles.radioImage}
                 >
                   {item.thumbnail && (
                     <Image
                       source={{ uri: item.thumbnail }}
-                      style={
-                        IsBigThumbnail ? styles.Big_image : styles.Small_image
-                      }
+                      style={styles.radioImage}
                     />
                   )}
                 </View>
@@ -115,15 +112,13 @@ const AlbumNewsDays = ({
 
 AlbumNewsDays.defaultProps = {
   heading: null,
-  tagline: null,
-  IsBigThumbnail: false
+  tagline: null
 };
 
 AlbumNewsDays.propTypes = {
   // required
   ListData: PropTypes.any,
   IsPodCast: PropTypes.bool,
-  IsBigThumbnail: PropTypes.bool,
   // optional
   heading: PropTypes.string,
   tagline: PropTypes.string
@@ -131,7 +126,7 @@ AlbumNewsDays.propTypes = {
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 32,
+    marginBottom: 17,
     width: '100%'
   },
   containerContent: {
@@ -149,32 +144,34 @@ const styles = StyleSheet.create({
     paddingBottom: 6,
     paddingLeft: 12
   },
-  Small_item: {
+  itemDisplay: {
     marginRight: 16,
-    width: 148
+    width: 155
   },
-  Big_item: {
-    marginRight: 30,
-    width: 200
-  },
-  Big_image: {
+  imageDisplay: {
     backgroundColor: colors.greyLight,
-    height: 220,
-    width: 210,
-    borderRadius: 20
-  },
-
-  Small_image: {
-    backgroundColor: colors.greyLight,
-    height: 148,
-    width: 148
+    height: 155,
+    width: 155,
+    borderRadius: 15
   },
   title: {
     ...gStyle.textSpotifyBold12,
     color: colors.white,
     marginTop: 4,
-    textAlign: 'center'
+    textAlign: 'left'
+  },
+
+  radio: {
+    marginRight: 16,
+    width: 155,
+  },
+
+  radioImage: {
+    backgroundColor: colors.greyLight,
+    height: 155,
+    width: 155,
+    borderRadius: 100
   }
 });
 
-export default AlbumNewsDays;
+export default React.memo(AlbumNewsDays);

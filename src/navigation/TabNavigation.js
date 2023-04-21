@@ -14,7 +14,6 @@ import CustomTabBar from '../components/Design/CustomTabBar';
 import SvgTabHome from '../icons/Svg.TabHome';
 import SvgTabLibrary from '../icons/Svg.TabLibrary';
 import SvgTabSearch from '../icons/Svg.TabSearch';
-
 const Tab = createBottomTabNavigator();
 
 export default () => (
@@ -23,7 +22,7 @@ export default () => (
       headerShown: false,
       tabBarIcon: ({ active }) => {
         let icon = <SvgTabHome active={active} />;
-
+      
         if (route.name === 'StackSearch') {
           icon = <SvgTabSearch active={active} />;
         } else if (route.name === 'StackLibrary') {
@@ -44,6 +43,8 @@ export default () => (
         tabBarLabel: 'Home'
       }}
     />
+
+
     <Tab.Screen
       name="StackSearch"
       component={StackSearch}

@@ -36,6 +36,7 @@ export default () => (
           animation: 'slide_from_bottom'
         }}
       />
+      
       <Stack.Screen
         name="ModalMoreOptions"
         component={ModalMoreOptions}
@@ -60,6 +61,8 @@ export default () => (
             'https://photo-zmp3.zmdcdn.me/cover/d/2/2/3/d223524cfa359d16b2c0d6e4497c126f.jpg'
         }}
       />
+
+
     </Stack.Navigator>
   </NavigationContainer>
 );

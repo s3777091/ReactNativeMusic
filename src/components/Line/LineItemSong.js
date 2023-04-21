@@ -145,4 +145,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default LineItemSong;
+export default React.memo(LineItemSong);

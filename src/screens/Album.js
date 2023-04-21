@@ -7,20 +7,24 @@ import {
   Text,
   View,
   ActivityIndicator,
-  BlurView
+  BlurView,
+  Button,
+  Dimensions
 } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, AntDesign } from '@expo/vector-icons';
 import { colors, device, gStyle } from '../constants';
 // components
 import LinearGradient from '../components/Design/LinearGradient';
 import LineItemSong from '../components/Line/LineItemSong';
+
+
 import TouchIcon from '../components/Design/TouchIcon';
 
 import con from '../../data';
 // context
 import Context from '../context';
 
-const LinkAblum = con.Domain.concat(con.Play_List);
+const LinkAblum = con.Domain.concat(con.AlbumLink);
 const LinkEpisode = con.Domain.concat(con.PodCastEpisode);
 
 const Album = ({ navigation, route }) => {
@@ -30,15 +34,20 @@ const Album = ({ navigation, route }) => {
 
   const [isLoading, setLoading] = React.useState(true);
   const [listMusic, setListMusic] = React.useState();
+  const [Detail, setDetail] = React.useState();
 
+
+  //Get Song
   const GetDataList = async () => {
+    //False mean PlayList
     if (!data_pass.type) {
       try {
         const response = await fetch(LinkAblum.concat(data_pass.id));
-        const json = await response.json();
-        const responseHome = await fetch(json.play_list);
-        const dataHome = await responseHome.json();
-        setListMusic(dataHome.data.song.items);
+        await response.json().then((ra) => {
+          setDetail(ra);
+          setListMusic(ra.song.items);
+        });
+
       } catch (error) {
         console.error(error);
       } finally {
@@ -46,11 +55,11 @@ const Album = ({ navigation, route }) => {
       }
     } else {
       try {
-        const response = await fetch(LinkEpisode.concat(data_pass.id));
-        const json = await response.json();
-        const responsePodCast = await fetch(json.pod);
-        const tab = await responsePodCast.json();
-        setListMusic(tab.data.items);
+        // const response = await fetch(LinkEpisode.concat(data_pass.id));
+        // const json = await response.json();
+        // const responsePodCast = await fetch(json.pod);
+        // const tab = await responsePodCast.json();
+        // setListMusic(tab.data.items);
       } catch (error) {
         console.error(error);
       } finally {
@@ -60,7 +69,7 @@ const Album = ({ navigation, route }) => {
   };
 
   function color_genter() {
-    return '#'.concat(Math.floor(Math.random() * 16777215).toString(16));
+    return 'rgb(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ')';
   }
 
   React.useEffect(() => {
@@ -75,13 +84,11 @@ const Album = ({ navigation, route }) => {
   const [song, setSong] = React.useState(currentSongData.title);
   const scrollY = React.useRef(new Animated.Value(0)).current;
 
-
-
   const onChangeSong = async (songData) => {
     // update local state
     setSong(songData.title);
     updateState('currentSongData', songData);
-    navigation.navigate('ModalMusicPlayer', {check: currentSongData.music_id});
+    navigation.navigate('ModalMusicPlayer', { check: currentSongData.music_id });
   };
 
   // ui state
@@ -98,7 +105,7 @@ const Album = ({ navigation, route }) => {
 
   const stickyArray = device.web ? [] : [0];
   const headingRange = device.web ? [140, 200] : [230, 280];
-  const shuffleRange = device.web ? [40, 80] : [40, 80];
+  const shuffleRange = device.web ? [80, 120] : [80, 120];
 
   const opacityHeading = scrollY.interpolate({
     inputRange: headingRange,
@@ -120,6 +127,7 @@ const Album = ({ navigation, route }) => {
         >
           <LinearGradient fill={colorOne} height={89} />
         </Animated.View>
+
         <View style={styles.header}>
           <TouchIcon
             icon={<Feather color={colors.white} name="chevron-left" />}
@@ -143,7 +151,7 @@ const Album = ({ navigation, route }) => {
 
       <View style={styles.containerFixed}>
         <View style={styles.containerLinear}>
-          <LinearGradient fill={colorOne} />
+          <LinearGradient fill={colorOne} height={(Dimensions.get('window').height / 2) + 89} />
         </View>
         <View style={styles.containerImage}>
           <Image source={{ uri: DataHeader.image }} style={styles.image} />
@@ -155,9 +163,33 @@ const Album = ({ navigation, route }) => {
         </View>
         <View style={styles.containerAlbum}>
           <Text style={styles.albumInfo}>
-            {`Album by ${DataHeader.artist} · ${DataHeader.release_data}`}
+            {`Album by ${DataHeader.artist}`}
           </Text>
         </View>
+
+        <View style={styles.containerDetail}>
+
+          <TouchIcon style={styles.iconDetail}
+            icon={<Feather name="download" color={colors.white} />}
+          // onPress={() => {
+          //   // update main state
+          //   updateState('showMusicBar', !showMusicBar);
+          //   navigation.navigate('ModalMoreOptions', {
+          //     album
+          //   });
+          // }}
+          />
+          <Button
+            style={{ borderRadius: 50 }}
+            title="phát ngẫu nhiên"
+            color="#be32fe"
+          />
+
+          <TouchIcon style={styles.iconDetail}
+            icon={<AntDesign color={colors.white} name="hearto" />}
+          />
+        </View>
+
       </View>
 
       {isLoading ? (
@@ -178,9 +210,12 @@ const Album = ({ navigation, route }) => {
               style={[
                 styles.containerStickyLinear,
                 { opacity: opacityShuffle }
-              ]}
-            >
-              <LinearGradient fill={colors.black20} height={50} />
+              ]}>
+              <Button
+                title="phát ngẫu nhiên"
+                color="#be32fe"
+              />
+              {/* <LinearGradient fill={colors.black20} height={50} /> */}
             </Animated.View>
           </View>
 
@@ -210,10 +245,11 @@ const Album = ({ navigation, route }) => {
                     }}
                   />
                 ))}
+
             </View>
           )}
 
-          <View style={gStyle.spacer16} />
+          <View style={{ paddingBottom: 300 }} />
         </Animated.ScrollView>
       )}
     </>
@@ -277,7 +313,7 @@ const styles = StyleSheet.create({
   },
   containerFixed: {
     alignItems: 'center',
-    paddingTop: device.iPhoneNotch ? 94 : 60,
+    paddingTop: device.iPhoneNotch ? 114 : 70,
     position: 'absolute',
     width: '100%'
   },
@@ -295,14 +331,14 @@ const styles = StyleSheet.create({
     zIndex: device.web ? 20 : 0
   },
   image: {
-    height: 148,
+    height: 200,
     marginBottom: device.web ? 0 : 16,
-    width: 148,
-    borderRadius: 2
+    width: 200,
+    borderRadius: 10
   },
   containerTitle: {
-    marginTop: device.web ? 8 : 0,
-    zIndex: device.web ? 20 : 0
+    marginTop: device.web ? 8 : 10,
+    zIndex: device.web ? 20 : 10
   },
   title: {
     ...gStyle.textSpotifyBold20,
@@ -310,6 +346,23 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     paddingHorizontal: 24,
     textAlign: 'center'
+  },
+
+  iconDetail: {
+    marginHorizontal: 35,
+    justifyContent: 'center',
+    marginVertical: 20
+  },
+
+  displayDetail: {
+    marginHorizontal: 35,
+    ...gStyle.textSpotify12,
+    color: colors.greyInactive,
+  },
+  containerDetail: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   containerAlbum: {
     zIndex: device.web ? 20 : 0
@@ -320,22 +373,21 @@ const styles = StyleSheet.create({
     marginBottom: 48
   },
   containerScroll: {
-    paddingTop: 89
+    paddingTop: 250
   },
   containerSticky: {
-    marginTop: device.iPhoneNotch ? 238 : 194
+    marginTop: device.iPhoneNotch ? 238 : 200
   },
   containerShuffle: {
     alignItems: 'center',
-    height: 50,
+    height: 20,
     shadowColor: colors.blackBg,
     shadowOffset: { height: -10, width: 0 },
-    shadowOpacity: 0.2,
-    shadowRadius: 20
+    shadowOpacity: 0.2
   },
   containerStickyLinear: {
     position: 'absolute',
-    top: 0,
+    top: -163,
     width: '100%'
   },
   btn: {
@@ -353,7 +405,8 @@ const styles = StyleSheet.create({
   containerSongs: {
     alignItems: 'center',
     backgroundColor: colors.blackBg,
-    minHeight: 540
+    minHeight: 540,
+    borderRadius: 20
   },
   row: {
     alignItems: 'center',
@@ -368,4 +421,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Album;
+export default React.memo(Album);
