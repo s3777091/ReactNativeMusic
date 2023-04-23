@@ -25,7 +25,6 @@ const PlaylistItem = ({  onPress, ListData }) => (
       ) : (
         <Text style={styles.playlistTitle}>{ListData.title}</Text>
       )}
-
       <View style={{transform: [{ rotate: '20deg'}]}}>
         <Image source={{ uri: ListData.thumbnail }} style={styles.image} />
       </View>

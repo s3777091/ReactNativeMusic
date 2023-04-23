@@ -1,13 +1,17 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import {
-  FlatList,
   Image,
   StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from 'react-native';
+
+
+import { FlashList } from "@shopify/flash-list";
+
+
 import { useNavigation } from '@react-navigation/native';
 import { colors, gStyle } from '../../constants';
 
@@ -18,7 +22,7 @@ const ArtistHorizontal = ({ ListData, heading }) => {
     <View style={styles.container}>
       {heading && <Text style={styles.heading}>{heading}</Text>}
 
-      <FlatList
+      <FlashList
         horizontal
         contentContainerStyle={styles.containerContent}
         data={ListData}
@@ -30,6 +34,7 @@ const ArtistHorizontal = ({ ListData, heading }) => {
           index
         })}
         removeClippedSubviews
+        estimatedItemSize={200}
         windowSize={50}
         renderItem={({ item, index }) => (
           <View
@@ -45,7 +50,7 @@ const ArtistHorizontal = ({ ListData, heading }) => {
               }
             >
               <Image
-                source={{ uri: item.image }}
+                source={{ uri: item.thumbnail }}
                 style={styles.circle_image}
               />
               <Text style={styles.title}>{item.name}</Text>

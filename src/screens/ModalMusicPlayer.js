@@ -1,5 +1,5 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
+import PropTypes, { any } from 'prop-types';
 import { Ionicons } from '@expo/vector-icons';
 import {
   Image,
@@ -27,11 +27,6 @@ import Context from '../context';
 import cons from '../../data';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const linkMUSIC = cons.Domain.concat(cons.PLAY_MP3);
-
-const linkPodCast = cons.Domain.concat(cons.PodCastListen);
-
-const LinkLyRick = cons.Domain.concat(cons.MP3_LYRIC);
 
 const ModalMusicPlayer = (props) => {
   // get main app state
@@ -49,7 +44,6 @@ const ModalMusicPlayer = (props) => {
 
   const [Repeat, setRepeat] = React.useState(false);
 
-  const [getLink, setLink] = React.useState(String);
 
   const [Playing, setPlaying] = React.useState(false);
 
@@ -57,46 +51,16 @@ const ModalMusicPlayer = (props) => {
 
   const [UserSeeking, SetUserSeeking] = React.useState(false);
 
-  const [dataLyric, setDataLyric] = React.useState();
-
   const [duration, setDuration] = React.useState(Number);
   const [position, setPosition] = React.useState(Number);
 
   const [audioProgess, setAudioProgess] = React.useState(Number);
+
+
   const sound = React.useRef(new Audio.Sound());
 
-  const initialState = {Playing: false};
-
-  async function PlayAudio(_state = initialState, action) {
-    switch (action.type) {
-      case 'Play': {
-        setPlaying(true);
-        const result = await sound.current.getStatusAsync();
-        if (result.isLoaded) {
-          if (result.isPlaying === false) {
-            sound.current.playAsync();
-          }
-        }
-      }
-      case 'Pause': {
-        const result = await sound.current.getStatusAsync();
-        if (result.isLoaded) {
-          if (result.isPlaying === true) {
-            setPlaying(false);
-            sound.current.pauseAsync();
-          }
-        }
-      }
-      default:
-        throw new Error();
-    }
-  }
-
-
-  const [state, dispatch] = React.useReducer(PlayAudio, initialState);
-
   async function slider_change(value) {
-    if(UserSeeking){
+    if (UserSeeking) {
       const seektime = value * duration
       setPosition(seektime);
       sound.current.setPositionAsync(seektime);
@@ -104,95 +68,44 @@ const ModalMusicPlayer = (props) => {
     }
   }
 
-  const get_lyric = async (id) => {
-    const isMouted = true;
-    try {
-      const res = await fetch(LinkLyRick.concat(id));
-      const json = await res.json();
-
-      const resLink = await fetch(json.lyricLink);
-      const tabs = await resLink.json();
-
-      if (isMouted) {
-        setDataLyric(tabs?.data?.sentences);
-      }
-    } catch (error) {
-    } finally {
-      SetLoading(false);
+  async function Play() {
+    setPlaying(true);
+    const result = await sound.current.getStatusAsync();
+    if (result.isPlaying === false) {
+      sound.current.playAsync();
     }
-  };
+  }
+
+  async function Pause() {
+    setPlaying(false);
+    const result = await sound.current.getStatusAsync();
+    if (result.isPlaying === true) {
+      sound.current.pauseAsync();
+    }
+  }
+
 
   React.useEffect(() => {
+
+    Audio.setAudioModeAsync({
+      playThroughEarpieceAndroid: false,
+      allowsRecordingIOS: false,
+      playsInSilentModeIOS: true,
+      staysActiveInBackground: true,
+      shouldDuckAndroid: true
+    })
     return sound
       ? () => {
-          sound.current.unloadAsync();
-        }
+        sound.current.unloadAsync();
+      }
       : undefined;
   }, [sound]);
 
-  const showAlert = () =>
-    Alert.alert(
-      'Lỗi Vip',
-      'Hiện tại chưa có chức năng vip cho bài hát hoặc podcast này',
-      [
-        {
-          text: 'Thoát tới home',
-          onPress: () => navigation.goBack(null),
-          style: 'cancel'
-        }
-      ],
-      {
-        cancelable: true,
-        onDismiss: () =>
-          Alert.alert(
-            'This alert was dismissed by tapping outside of the alert dialog.'
-          )
-      }
-    );
-
-  const fetchSoundLink = async (type, id) => {
-    const isMouted = true;
-    //False Is song // True is PodCast
-    if (!type) {
-      try {
-        const responseSong = await fetch(linkMUSIC.concat(id));
-        const jsonSong = await responseSong.json();
-        if (isMouted) {
-          setLink(jsonSong.music);
-          get_lyric(id);
-        }
-      } catch (error) {
-        showAlert();
-      } finally {
-        SetLoading(false);
-      }
-    } else {
-      try {
-        const responsePodCast = await fetch(linkPodCast.concat(id));
-        const jsonPodCast = await responsePodCast.json();
-
-        const reponsePodCast = await fetch(jsonPodCast.listen);
-        const dataPodCast = await reponsePodCast.json();
-        const touchJson = JSON.stringify(dataPodCast.data);
-        if (isMouted) {
-          setLink(
-            touchJson
-              .substring(touchJson.indexOf(`"128":`), touchJson.indexOf(`"}`))
-              .replace(`"128":"`, '')
-          );
-        }
-      } catch (error) {
-        showAlert();
-      } finally {
-        SetLoading(false);
-      }
-    }
-  };
   const ReplayAudio = async () => {
     setRepeat(true);
   };
 
-  
+
   function millisToMinutesAndSeconds(millis) {
     const minutes = Math.floor(millis / 60000);
     const seconds = ((millis % 60000) / 1000).toFixed(0);
@@ -202,58 +115,44 @@ const ModalMusicPlayer = (props) => {
   const LoadSong = async () => {
     const checkLoading = await sound.current.getStatusAsync();
     if (checkLoading.isLoaded === false) {
-      try {
-        const music = await sound.current.loadAsync(
-          {
-            uri: getLink
-          },
-          {
-            shouldPlay: true,
-            progressUpdateIntervalMillis: 1000,
-            allowsRecordingIOS: false,
-            interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
-            playsInSilentModeIOS: true,
-            shouldDuckAndroid: true,
-            interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
-            playThroughEarpieceAndroid: false,
-            staysActiveInBackground: true
-          }
-        );
-        sound.current.setOnPlaybackStatusUpdate((e) => {
-          if (e.isLoaded) {
-            setDuration(e.durationMillis);
-            setPosition(e.positionMillis);
-            const currentProgress =
-              Math.max(0, e.positionMillis) / e.durationMillis;
-            setAudioProgess(currentProgress);
-            
-          }
-          if(e.didJustFinish){
-            if(Repeat){
-              sound.current.replayAsync();
-            } else{
-              sound.current.stopAsync();
-            }
-          }
-        });
-        //Hook
-        if (!music.isLoaded) {
-          SetLoading(true);
-        } else {
-          SetLoading(false);
+      const music = await sound.current.loadAsync({ uri: currentSongData.songUrl }, {
+        shouldPlay: true,
+        progressUpdateIntervalMillis: 1000,
+      });
+
+      setPlaying(true);
+      sound.current.setOnPlaybackStatusUpdate((e) => {
+        if (e.isLoaded) {
+          setDuration(e.durationMillis);
+          setPosition(e.positionMillis);
+          const currentProgress =
+            Math.max(0, e.positionMillis) / e.durationMillis;
+          setAudioProgess(currentProgress);
         }
-      } catch (error) {
+        if (e.didJustFinish) {
+          if (Repeat) {
+            sound.current.replayAsync();
+          } else {
+            sound.current.stopAsync();
+          }
+        }
+      });
+      //Hook
+      if (!music.isLoaded) {
         SetLoading(true);
+      } else {
+        SetLoading(false);
       }
+
     } else {
       SetLoading(true);
     }
   };
 
   React.useEffect(() => {
-    fetchSoundLink(currentSongData.type, currentSongData.music_id);
     LoadSong();
-  }, [getLink]);
+
+  }, []);
 
   const scrollY = React.useRef(new Animated.Value(0)).current;
 
@@ -334,17 +233,16 @@ const ModalMusicPlayer = (props) => {
             />
             <View style={gStyle.flexRowCenterAlign}>
               {Loading ? (
-                //
                 <ActivityIndicator size={'large'} color={'red'} />
               ) : (
                 <>
                   {!Playing ? (
-                    <TouchableOpacity onPress={() => dispatch({type: 'Play'})}>
-                      <Ionicons name="ios-pause" size={55} color="#444" />
+                    <TouchableOpacity onPress={() => Play()}>
+                      <Ionicons name="play" size={55} color="#444" />
                     </TouchableOpacity>
                   ) : (
-                    <TouchableOpacity onPress={() => dispatch({type: 'Pause'})}>
-                      <Ionicons name="ios-play-circle" size={55} color="#444" />
+                    <TouchableOpacity onPress={() => Pause()}>
+                      <Ionicons name="pause" size={55} color="#444" />
                     </TouchableOpacity>
                   )}
                 </>
@@ -370,72 +268,13 @@ const ModalMusicPlayer = (props) => {
             )}
           </View>
         </View>
-        <SafeAreaView style={styles.containerLyric}>
-          {dataLyric == null ? (
-            <></>
-          ) : (
-            <>
-              <Text
-                style={{
-                  color: colors.white,
-                  fontSize: 24,
-                  fontWeight: 'bold'
-                }}
-              >
-                Lời Nhạc
-              </Text>
-              {dataLyric &&
-                dataLyric.map((large) => (
-                  <FlatList
-                    key={large.words[large.words.length - 1].endTime}
-                    contentContainerStyle={{ margin: 5 }}
-                    horizontal
-                    removeClippedSubviews
-                    windowSize={50}
-                    keyExtractor={(item, index) => index.toString()}
-                    data={large.words}
-                    renderItem={({ item }) => (
-                      <>
-                        {large.words[0].startTime < position &&
-                        position <
-                          large.words[large.words.length - 1].endTime ? (
-                          <Text
-                            style={{
-                              color: colors.brandPrimary,
-                              padding: 1.5,
-                              fontWeight: 'bold',
-                              fontSize: 18
-                            }}
-                          >
-                            {item.data}
-                          </Text>
-                        ) : (
-                          <Text
-                            style={{
-                              color: '#F8EBFF',
-                              padding: 1.5,
-                              fontWeight: 'bold',
-                              fontSize: 18
-                            }}
-                          >
-                            {item.data}
-                          </Text>
-                        )}
-                      </>
-                    )}
-                    showsHorizontalScrollIndicator={false}
-                  />
-                ))}
-            </>
-          )}
-        </SafeAreaView>
+
       </Animated.ScrollView>
     </React.Fragment>
   );
 };
 
 ModalMusicPlayer.propTypes = {
-  // required
   navigation: PropTypes.object.isRequired
 };
 
@@ -485,4 +324,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ModalMusicPlayer;
+export default React.memo(ModalMusicPlayer);

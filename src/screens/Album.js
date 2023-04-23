@@ -18,6 +18,8 @@ import LinearGradient from '../components/Design/LinearGradient';
 import LineItemSong from '../components/Line/LineItemSong';
 
 
+import ArtistDisplay from '../components/Display/ArtistDisplay';
+
 import TouchIcon from '../components/Design/TouchIcon';
 
 import con from '../../data';
@@ -26,6 +28,8 @@ import Context from '../context';
 
 const LinkAblum = con.Domain.concat(con.AlbumLink);
 const LinkEpisode = con.Domain.concat(con.PodCastEpisode);
+
+const linkMUSIC = con.Domain.concat(con.StreamLink);
 
 const Album = ({ navigation, route }) => {
   const data_pass = route.params;
@@ -55,6 +59,7 @@ const Album = ({ navigation, route }) => {
       }
     } else {
       try {
+        
         // const response = await fetch(LinkEpisode.concat(data_pass.id));
         // const json = await response.json();
         // const responsePodCast = await fetch(json.pod);
@@ -68,6 +73,9 @@ const Album = ({ navigation, route }) => {
     }
   };
 
+
+
+
   function color_genter() {
     return 'rgb(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ')';
   }
@@ -78,17 +86,47 @@ const Album = ({ navigation, route }) => {
   }, []);
 
   // get main app state
-  const { currentSongData, updateState } =
+  const { currentSongData, showMusicBar, updateState } =
     React.useContext(Context);
 
   const [song, setSong] = React.useState(currentSongData.title);
   const scrollY = React.useRef(new Animated.Value(0)).current;
 
+
+
+  const fetchSoundLink = async (id) => {
+    const isMouted = true;
+    //False Is song // True is PodCast
+    try {
+      const responseSong = await fetch(linkMUSIC.concat(id));
+      const jsonSong = await responseSong.json();
+
+      if (isMouted) {
+        return jsonSong.mp3_128 || jsonSong.mp3_320 || jsonSong.mp3_lossless;
+      }
+    } catch (error) {
+      showAlert();
+    }
+
+  };
+
+
   const onChangeSong = async (songData) => {
     // update local state
     setSong(songData.title);
-    updateState('currentSongData', songData);
-    navigation.navigate('ModalMusicPlayer', { check: currentSongData.music_id });
+    songObject = {
+      music_id: songData.music_id,
+      album: songData.album,
+      artistsNames: songData.artistsNames,
+      image: songData.image,
+      length: songData.length,
+      title: songData.title,
+      type: data_pass.type,
+      songUrl: await fetchSoundLink(songData.music_id),
+    }
+
+    updateState('currentSongData', songObject);
+    navigation.navigate('ModalMusicPlayer');
   };
 
   // ui state
@@ -136,16 +174,18 @@ const Album = ({ navigation, route }) => {
           <Animated.View style={{ opacity: opacityShuffle }}>
             <Text style={styles.headerTitle}>{DataHeader.title}</Text>
           </Animated.View>
-          {/* <TouchIcon
+
+          <TouchIcon
             icon={<Feather color={colors.white} name="more-horizontal" />}
             onPress={() => {
               // update main state
               updateState('showMusicBar', !showMusicBar);
-              navigation.navigate('ModalMoreOptions', {
-                album
-              });
+
+              // navigation.navigate('ModalMoreOptions', {
+              //   album
+              // });
             }}
-          /> */}
+          />
         </View>
       </View>
 
@@ -171,13 +211,6 @@ const Album = ({ navigation, route }) => {
 
           <TouchIcon style={styles.iconDetail}
             icon={<Feather name="download" color={colors.white} />}
-          // onPress={() => {
-          //   // update main state
-          //   updateState('showMusicBar', !showMusicBar);
-          //   navigation.navigate('ModalMoreOptions', {
-          //     album
-          //   });
-          // }}
           />
           <Button
             style={{ borderRadius: 50 }}
@@ -215,7 +248,6 @@ const Album = ({ navigation, route }) => {
                 title="phát ngẫu nhiên"
                 color="#be32fe"
               />
-              {/* <LinearGradient fill={colors.black20} height={50} /> */}
             </Animated.View>
           </View>
 
@@ -227,6 +259,12 @@ const Album = ({ navigation, route }) => {
             </View>
           ) : (
             <View style={styles.containerSongs}>
+              <ArtistDisplay
+                key={Detail.artists.id}
+                ListData={Detail.artists}
+                heading={'Nghệ sĩ tham gia'}
+              />
+
               {DataList &&
                 DataList.map((music) => (
                   <LineItemSong
@@ -236,7 +274,7 @@ const Album = ({ navigation, route }) => {
                     type={data_pass.type}
                     Data={{
                       music_id: music.encodeId,
-                      album: music.title,
+                      album: DataHeader.title,
                       artistsNames: music.artistsNames,
                       image: music.thumbnailM,
                       length: music.duration,
@@ -249,7 +287,8 @@ const Album = ({ navigation, route }) => {
             </View>
           )}
 
-          <View style={{ paddingBottom: 300 }} />
+
+          <View style={{ marginBottom: showMusicBar ? 120 : 55 }}></View>
         </Animated.ScrollView>
       )}
     </>
@@ -406,6 +445,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.blackBg,
     minHeight: 540,
+    paddingTop: 22,
+    paddingBottom: 30,
     borderRadius: 20
   },
   row: {

@@ -59,13 +59,16 @@ BarMusicPlayer.propTypes = {
 
 const styles = StyleSheet.create({
   container: {
+    position: 'absolute',
+    bottom: 40,
     alignSelf: 'center',
     backgroundColor: '#230020',
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    width: '100%',
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15
   },
   containerIcon: {
     ...gStyle.flexCenter,
@@ -93,4 +96,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default BarMusicPlayer;
+export default React.memo(BarMusicPlayer);

@@ -25,11 +25,11 @@ const ModalMoreOptions = ({ route }) => {
     <React.Fragment>
       <SafeAreaView style={styles.containerSafeArea}>
         <TouchableWithoutFeedback
-          // onPress={() => {
-          //   // update main state
-          //   updateState('showMusicBar', !showMusicBar);
-          //   navigation.goBack();
-          // }}
+          onPress={() => {
+            // update main state
+            updateState('showMusicBar', !showMusicBar);
+            navigation.goBack();
+          }}
         >
           <View style={styles.containerButton}>
             <Text style={styles.buttonText}>Cancel</Text>

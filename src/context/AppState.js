@@ -20,6 +20,7 @@ class AppState extends React.Component {
         length: 262,
         title: 'Vì Mẹ Anh Bắt Chia Tay',
         type: false,
+        songUrl: ''
       },
       specialPodCastData: any,
       isLoading: true,

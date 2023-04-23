@@ -35,7 +35,7 @@ const AlbumNewsDays = ({
         contentContainerStyle={styles.containerContent}
         data={ListData}
         horizontal
-        getItemLayout={(ListData, index) => ({
+        getItemLayout={(_ListData, index) => ({
           length: 70,
           offset: 70 * index,
           index

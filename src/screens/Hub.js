@@ -22,7 +22,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const link = con.Domain.concat(con.GET_Hub);
 
-const Hub = ({ navigation, route }) => {
+const Hub = ({ navigation, route}) => {
   const idMusic = route.params;
 
   const [ColorOne, SetColorOne] = React.useState();

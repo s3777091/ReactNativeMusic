@@ -94,9 +94,10 @@ const styles = StyleSheet.create({
     ...gStyle.flexRowCenterAlign,
     backgroundColor: '#230020',
     paddingBottom: device.iPhoneNotch ? 24 : 16,
+    position: 'absolute',
     paddingTop: 12,
     position: 'absolute',
-    bottom: 25,
+    bottom: 10,
     left: 20,
     right: 20,
     elevation: 0,
@@ -108,9 +109,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#230020'
   },
   label: {
-    ...gStyle.textSpotify12,
-    paddingTop: 4
+    ...gStyle.textSpotify12
   }
 });
 
-export default CustomTabBar;
+export default React.memo(CustomTabBar);

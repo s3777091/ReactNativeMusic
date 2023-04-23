@@ -24,6 +24,7 @@ const wait = (timeout) => {
 };
 
 import Context from '../context';
+import { func } from 'prop-types';
 
 const Home = () => {
 
@@ -38,11 +39,8 @@ const Home = () => {
 
   const [DataPage, setDataPage] = React.useState([]);
 
-  const { currentSongData, updateState } = React.useContext(Context);
+  const { showMusicBar } = React.useContext(Context);
 
-  const [song, setSong] = React.useState(currentSongData.title);
-
-  const [activePlayList, setActivePlaylist] = React.useState(null);
 
 
 
@@ -56,8 +54,6 @@ const Home = () => {
           temp.push(ra?.playListHome);
         });
       }
-
-      console.log("Get Home Data Success");
       if (isMounted) {
         setDataPage(temp);
       }
@@ -67,6 +63,7 @@ const Home = () => {
       setLoading(false);
     }
   };
+
 
 
   const greeting = async () => {
@@ -79,6 +76,7 @@ const Home = () => {
       SetGreeting('Chào buổi Tối');
     }
   };
+
 
   const onRefresh = React.useCallback(() => {
     loadData();
@@ -96,7 +94,6 @@ const Home = () => {
   React.useEffect(() => {
     greeting();
     loadData();
-
   }, []);
 
   const scrollY = React.useRef(new Animated.Value(0)).current;
@@ -108,9 +105,9 @@ const Home = () => {
   });
 
 
+
   for (let i = 0; i < DataPage.length; i++) {
     for (let h = 0; h < DataPage[i].length; h++) {
-
       if (DataPage[i][h]?.type == 'banner') {
         AlbumViews.push(
           <>
@@ -120,7 +117,7 @@ const Home = () => {
               heading={'Nghệ sĩ nổi bật'}
             />
             <Banner
-              key={Math.random() * 100}
+              key={DataPage[i][h]?.encodeId}
               ListData={DataPage[i][h]?.playlist}
             />
 
@@ -152,7 +149,6 @@ const Home = () => {
       }
 
     }
-
   }
 
 
@@ -185,20 +181,20 @@ const Home = () => {
           /> */}
         </View>
 
+
         {isLoading ? (
           <ActivityIndicator size="large" color="#00ff00" />
         ) : (
           <>
-
             {AlbumViews}
-
-            <View style={gStyle.spacer16} />
+            <View style={{ marginBottom: showMusicBar ? 100 : 50 }}></View>
           </>
         )}
       </Animated.ScrollView>
     </React.Fragment>
   );
 };
+
 
 const styles = StyleSheet.create({
   iPhoneNotch: {

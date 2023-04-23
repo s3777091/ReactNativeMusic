@@ -7,6 +7,8 @@ import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactActivityDelegate;
+import com.kimusic.BuildConfig;
+import com.kimusic.R;
 
 import expo.modules.ReactActivityDelegateWrapper;
 

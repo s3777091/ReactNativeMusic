@@ -115,11 +115,11 @@ android {
 
     namespace "com.kimusic"
     defaultConfig {
-        applicationId "com.kimusic"
+        applicationId 'com.dathuynh.kimusic'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 50
+        versionName "0.0.1"
     }
 
     splits {

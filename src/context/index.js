@@ -9,7 +9,8 @@ export default React.createContext({
       'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/1/b/8/9/1b8958017b04a663eb8c093905dd4d85.jpg',
     length: 262,
     title: 'Vì Mẹ Anh Bắt Chia Tay',
-    type: false
+    type: false,
+    songUrl: ''
   },
   isLoading: true,
   showMusicBar: true
