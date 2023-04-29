@@ -1,4 +1,4 @@
-const Domain = "http://192.168.50.127:3000";
+const Domain = "http://192.168.0.104:3000";
 
 
 const Home = "/page?page=";
