@@ -9,6 +9,11 @@ import TabNavigation from './TabNavigation';
 import ModalMusicPlayer from '../screens/ModalMusicPlayer';
 import HubScreen from '../screens/Hub';
 
+
+
+import LoginScreen from '../screens/LoginScreen';
+import RegisterScreen from '../screens/RegisterScreen';
+
 const Stack = createNativeStackNavigator();
 
 export default () => (
@@ -51,6 +56,25 @@ export default () => (
         }}
       />
 
+      <Stack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{
+          headerShown: false,
+          presentation: 'fullScreenModal',
+          animation: 'slide_from_bottom'
+        }}
+      />
+
+      <Stack.Screen
+        name="Register"
+        component={RegisterScreen}
+        options={{
+          headerShown: false,
+          presentation: 'fullScreenModal',
+          animation: 'slide_from_bottom'
+        }}
+      />
 
     </Stack.Navigator>
   </NavigationContainer>

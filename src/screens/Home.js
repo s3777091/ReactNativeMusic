@@ -5,7 +5,9 @@ import {
   View,
   ActivityIndicator,
   Text,
-  RefreshControl
+  RefreshControl,
+  TouchableOpacity,
+  Image
 } from 'react-native';
 import { colors, device, gStyle } from '../constants';
 import con from '../../data';
@@ -18,6 +20,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const pageCount = con.Domain.concat(con.Home);
 
+import { Feather } from '@expo/vector-icons';
+import TouchIcon from '../components/Design/TouchIcon';
+
+import { useNavigation } from '@react-navigation/native';
 
 const wait = (timeout) => {
   return new Promise((resolve) => setTimeout(resolve, timeout));
@@ -28,6 +34,7 @@ import Context from '../context';
 const Home = () => {
 
   var AlbumViews = [];
+  const navigation = useNavigation();
 
   const [Greeting, SetGreeting] = React.useState();
 
@@ -113,7 +120,7 @@ const Home = () => {
               ListData={con.artistData}
               heading={'Nghệ sĩ nổi bật'}
             />
-            
+
             <Banner
               key={DataPage[i][h]?.encodeId}
               ListData={DataPage[i][h]?.playlist}
@@ -126,10 +133,10 @@ const Home = () => {
       if (DataPage[i][h]?.type == 'playlist') {
         AlbumViews.push(
           <AlbumDisplay
-          ListData={DataPage[i][h]?.playlist}
-          heading={DataPage[i][h]?.tilte}
-          tagline={DataPage[i][h]?.playlist[0].sortDescription || ""}
-        />
+            ListData={DataPage[i][h]?.playlist}
+            heading={DataPage[i][h]?.tilte}
+            tagline={DataPage[i][h]?.playlist[0].sortDescription || ""}
+          />
         )
       }
 
@@ -159,10 +166,10 @@ const Home = () => {
             {Greeting}
           </Text>
 
-          {/* <Image
-            style={styles.image_user}
-            source={require('../assets/images/confused.png')}
-          /> */}
+          <TouchIcon
+            onPress={() => navigation.navigate("Login")}
+            icon={<Feather color={colors.white} name="user" />}
+          />
         </View>
 
 
@@ -210,7 +217,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-
+    marginHorizontal: 9,
+    paddingTop: 12,
     marginBottom: 20
   },
   containerSupport: {

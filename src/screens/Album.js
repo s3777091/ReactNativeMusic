@@ -22,8 +22,6 @@ import ArtistDisplay from '../components/Display/ArtistDisplay';
 
 import TouchIcon from '../components/Design/TouchIcon';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
 
 import con from '../../data';
 // context

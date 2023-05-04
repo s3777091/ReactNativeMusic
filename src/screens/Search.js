@@ -106,7 +106,7 @@ const Search = () => {
                     value={TextSearch}
                     onChangeText={(text) => GetListSearchSuggest(text)}
                     placeholderTextColor={colors.black40}
-                    placeholder="Tìm kiếm nội dung ưa thích 🍕"
+                    placeholder="Tìm kiếm nội dung ưa thích"
                     autoFocus={true}
                     onSubmitEditing={NavigateToSearchResults}
                   />
