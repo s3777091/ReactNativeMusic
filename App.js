@@ -38,6 +38,7 @@ const App = () => {
 
       // hide splash screen to show app
       hideSplash();
+
     }
   }, [isLoading]);
 

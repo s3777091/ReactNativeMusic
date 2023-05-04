@@ -1,5 +1,5 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
+import PropTypes, { string } from 'prop-types';
 import {
   Image,
   StyleSheet,
@@ -12,14 +12,15 @@ import { colors, gStyle } from '../../constants';
 
 
 
+
+import AutoScroll from "@homielab/react-native-auto-scroll";
 import { FlashList } from "@shopify/flash-list";
 import Context from '../../context';
 //Data ? Heading ? tagline ? IsBigThumbnail ? IsPodCast
 const AlbumNewsDays = ({
   ListData,
   heading,
-  tagline,
-  IsPodCast
+  tagline
 }) => {
   const navigation = useNavigation();
 
@@ -27,7 +28,9 @@ const AlbumNewsDays = ({
 
   return (
     <View style={styles.container}>
+
       {heading && <Text style={styles.heading}>{heading}</Text>}
+
       {tagline && <Text style={styles.tagline}>{tagline}</Text>}
 
       <FlashList
@@ -45,64 +48,31 @@ const AlbumNewsDays = ({
         windowSize={50}
         keyExtractor={(item) => item.encodeId}
         renderItem={({ item }) => (
-          <>
-            {!IsPodCast ? (
-              <TouchableOpacity
-                activeOpacity={gStyle.activeOpacity}
-                hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }}
-                onPress={() => {
-                  navigation.navigate('Album', {
-                    id: item.encodeId,
-                    type: false,
-                    title: item.title,
-                    artist: item.artistsNames,
-                    image: item.thumbnailM
-                  });
-                }}
-                style={styles.itemDisplay}
-              >
-                <View
+          <TouchableOpacity
+            activeOpacity={gStyle.activeOpacity}
+            hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }}
+            onPress={() => {
+              navigation.navigate('Album', {
+                id: item.encodeId,
+                title: item.title,
+                artist: item.artistsNames,
+                image: item.thumbnailM
+              });
+            }}
+            style={styles.itemDisplay}
+          >
+            <View
+              style={styles.imageDisplay}
+            >
+              {item.thumbnail && (
+                <Image
+                  source={{ uri: item.thumbnail }}
                   style={styles.imageDisplay}
-                >
-                  {item.thumbnail && (
-                    <Image
-                      source={{ uri: item.thumbnail }}
-                      style={styles.imageDisplay}
-                    />
-                  )}
-                </View>
-                <Text style={styles.title}>{item.title}</Text>
-              </TouchableOpacity>
-            ) : (
-              <TouchableOpacity
-                activeOpacity={gStyle.activeOpacity}
-                hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }}
-                onPress={() => {
-                  navigation.navigate('Album', {
-                    id: item.encodeId,
-                    type: true,
-                    title: item.title,
-                    artist: item.artists[0].name,
-                    release_data: '',
-                    image: item.thumbnail
-                  });
-                }}
-                style={styles.radio}
-              >
-                <View
-                  style={styles.radioImage}
-                >
-                  {item.thumbnail && (
-                    <Image
-                      source={{ uri: item.thumbnail }}
-                      style={styles.radioImage}
-                    />
-                  )}
-                </View>
-                <Text style={styles.title}>{item.title}</Text>
-              </TouchableOpacity>
-            )}
-          </>
+                />
+              )}
+            </View>
+            <Text style={styles.title}>{item.title}</Text>
+          </TouchableOpacity>
         )}
         showsHorizontalScrollIndicator={false}
       />
@@ -118,7 +88,6 @@ AlbumNewsDays.defaultProps = {
 AlbumNewsDays.propTypes = {
   // required
   ListData: PropTypes.any,
-  IsPodCast: PropTypes.bool,
   // optional
   heading: PropTypes.string,
   tagline: PropTypes.string

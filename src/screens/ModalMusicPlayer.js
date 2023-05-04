@@ -8,9 +8,7 @@ import {
   View,
   ActivityIndicator,
   Animated,
-  TouchableOpacity,
-  Alert,
-  FlatList
+  TouchableOpacity
 } from 'react-native';
 
 import { Feather, FontAwesome, MaterialIcons } from '@expo/vector-icons';
@@ -21,12 +19,9 @@ import { Audio } from 'expo-av';
 // components
 import ModalHeader from '../components/Design/ModalHeader';
 import TouchIcon from '../components/Design/TouchIcon';
+import AutoScroll from "@homielab/react-native-auto-scroll";
 
-// context
 import Context from '../context';
-import cons from '../../data';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
 
 const ModalMusicPlayer = (props) => {
   // get main app state
@@ -36,10 +31,11 @@ const ModalMusicPlayer = (props) => {
   const [favorited, setFavorited] = React.useState(false);
   const { navigation, route } = props;
 
-
   // ui state
   const favoriteColor = favorited ? colors.brandPrimary : colors.white;
   const favoriteIcon = favorited ? 'heart' : 'heart-o';
+
+
   const timeLeft = func.formatTime(currentSongData.length);
 
   const [Repeat, setRepeat] = React.useState(false);
@@ -48,8 +44,6 @@ const ModalMusicPlayer = (props) => {
   const [Playing, setPlaying] = React.useState(false);
 
   const [Loading, SetLoading] = React.useState(true);
-
-  const [UserSeeking, SetUserSeeking] = React.useState(false);
 
   const [duration, setDuration] = React.useState(Number);
   const [position, setPosition] = React.useState(Number);
@@ -60,19 +54,16 @@ const ModalMusicPlayer = (props) => {
   const sound = React.useRef(new Audio.Sound());
 
   async function slider_change(value) {
-    if (UserSeeking) {
-      const seektime = value * duration
-      setPosition(seektime);
-      sound.current.setPositionAsync(seektime);
-      SetUserSeeking(false);
-    }
+    const seektime = value * duration
+    setPosition(seektime);
+    await sound.current.setPositionAsync(seektime);
   }
 
   async function Play() {
     setPlaying(true);
     const result = await sound.current.getStatusAsync();
     if (result.isPlaying === false) {
-      sound.current.playAsync();
+      await sound.current.playAsync();
     }
   }
 
@@ -80,7 +71,7 @@ const ModalMusicPlayer = (props) => {
     setPlaying(false);
     const result = await sound.current.getStatusAsync();
     if (result.isPlaying === true) {
-      sound.current.pauseAsync();
+      await sound.current.pauseAsync();
     }
   }
 
@@ -94,23 +85,29 @@ const ModalMusicPlayer = (props) => {
       staysActiveInBackground: true,
       shouldDuckAndroid: true
     })
+
+    try {
+      LoadSong();
+    } catch (error) {
+      console.log(error);
+    }
+
     return sound
       ? () => {
         sound.current.unloadAsync();
       }
       : undefined;
+
+
   }, [sound]);
 
   const ReplayAudio = async () => {
-    setRepeat(true);
+    if (Repeat) {
+      setRepeat(false);
+    } else {
+      setRepeat(true);
+    }
   };
-
-
-  function millisToMinutesAndSeconds(millis) {
-    const minutes = Math.floor(millis / 60000);
-    const seconds = ((millis % 60000) / 1000).toFixed(0);
-    return minutes + ':' + seconds;
-  }
 
   const LoadSong = async () => {
     const checkLoading = await sound.current.getStatusAsync();
@@ -149,11 +146,6 @@ const ModalMusicPlayer = (props) => {
     }
   };
 
-  React.useEffect(() => {
-    LoadSong();
-
-  }, []);
-
   const scrollY = React.useRef(new Animated.Value(0)).current;
 
   const opacityIn = scrollY.interpolate({
@@ -188,9 +180,18 @@ const ModalMusicPlayer = (props) => {
 
           <View style={[gStyle.flexRowSpace, styles.containerDetails]}>
             <View style={styles.containerSong}>
-              <Text ellipsizeMode="tail" numberOfLines={1} style={styles.song}>
-                {currentSongData.title}
-              </Text>
+              {currentSongData.title.length > 15 ? (
+                <AutoScroll style={{ width: 270 }} endPadding={10}>
+                  <Text ellipsizeMode="tail" numberOfLines={1} style={styles.song}>
+                    {currentSongData.title}
+                  </Text>
+                </AutoScroll>
+              ) : (
+                <Text ellipsizeMode="tail" numberOfLines={1} style={styles.song}>
+                  {currentSongData.title}
+                </Text>
+              )}
+
               <Text style={styles.artist}>{currentSongData.artist}</Text>
             </View>
             <View style={styles.containerFavorite}>
@@ -208,19 +209,14 @@ const ModalMusicPlayer = (props) => {
               minimumValue={0}
               maximumValue={1}
               value={audioProgess}
-              onSlidingComplete={(value) => {
+              onSlidingComplete={async (value) => {
                 slider_change(value);
-                SetUserSeeking(false);
               }}
               thumbTintColor={colors.greyLight}
-
-              onValueChange={async () => {
-                SetUserSeeking(true);
-              }}
             />
             <View style={styles.containerTime}>
               <Text style={styles.time}>
-                {millisToMinutesAndSeconds(position)}
+                {func.millisToMinutesAndSeconds(position)}
               </Text>
               <Text style={styles.time}>{`-${timeLeft}`}</Text>
             </View>

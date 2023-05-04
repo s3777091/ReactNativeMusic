@@ -3,8 +3,6 @@ import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 
 import preloadFonts from './preloadFonts';
-import preloadImages from './preloadImages';
-
 // cache fonts
 // /////////////////////////////////////////////////////////////////////////////
 const cacheFonts = (fonts) => fonts.map((font) => Font.loadAsync(font));
@@ -25,10 +23,9 @@ const cacheImages = (images) =>
 const loadAssetsAsync = async () => {
   // preload assets
   const fontAssets = cacheFonts(preloadFonts);
-  const imageAssets = cacheImages(preloadImages);
 
   // promise load all
-  return Promise.all([...fontAssets, ...imageAssets]);
+  return Promise.all([...fontAssets]);
 };
 
 // format seconds
@@ -42,9 +39,18 @@ const formatTime = (sec) => {
   return `${padTime(minutes, 1)}:${padTime(seconds, 2)}`;
 };
 
+
+const millisToMinutesAndSeconds = (millis) => {
+  const minutes = Math.floor(millis / 60000);
+  const seconds = ((millis % 60000) / 1000).toFixed(0);
+  return minutes + ':' + seconds;
+}
+
+
 export default {
   cacheFonts,
   cacheImages,
   loadAssetsAsync,
-  formatTime
+  formatTime,
+  millisToMinutesAndSeconds
 };

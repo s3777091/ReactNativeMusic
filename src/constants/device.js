@@ -12,8 +12,6 @@ const aspectRatio = height / width;
 // is iPad
 const { isPad } = Platform;
 
-// is iPhone with Notch?
-// iPhoneX, iPhoneXs, iPhoneXr, iPhoneXs Max, iPhone 11 & 12
 let iPhoneNotch = false;
 if (iOS) {
   // iphone screen breakdown

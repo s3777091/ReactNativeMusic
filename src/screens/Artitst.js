@@ -6,7 +6,8 @@ import {
   Text,
   View,
   ActivityIndicator,
-  ImageBackground
+  ImageBackground,
+  Dimensions
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { colors, device, gStyle } from '../constants';
@@ -16,27 +17,36 @@ import LinearGradient from '../components/Design/LinearGradient';
 import TouchIcon from '../components/Design/TouchIcon';
 import MusicList from '../components/Line/MusicList';
 
+import AlbumDisplay from '../components/Display/AlbumDisplay';
+
+
+import ArtistDisplay from '../components/Display/ArtistDisplay';
+
 import con from '../../data';
 
 // context
 import Context from '../context';
 
-const link = con.Domain.concat(con.Artist_List);
-
-const link_playList = con.Domain.concat(con.Play_List);
+const link = con.Domain.concat(con.ArtistLink);
+const linkMUSIC = con.Domain.concat(con.StreamLink);
 
 const imageHeight = Math.round((device.width * 9) / 16);
 
 const Artist = ({ navigation, route }) => {
+
+  var ArtistView = [];
+
+
   const alias_code = route.params;
 
   const [isLoading, setLoading] = React.useState(true);
 
-  const [headerData, setHeader] = React.useState();
+  const [Artist, setArtist] = React.useState();
+  const [Section, setSection] = React.useState([]);
 
-  const [similerData, setSimiler] = React.useState();
 
-  const { currentSongData, updateState } = React.useContext(Context);
+
+  const { currentSongData, updateState, showMusicBar } = React.useContext(Context);
 
   const [song, setSong] = React.useState(currentSongData.title);
 
@@ -44,31 +54,11 @@ const Artist = ({ navigation, route }) => {
     const isMousted = true;
     try {
       const response = await fetch(link.concat(alias_code.alias));
-      const json = await response.json();
-      const responseHome = await fetch(json.artists);
-      await responseHome.json().then((ts) => {
+      await response.json().then((ts) => {
         if (isMousted) {
-          setHeader(ts.data);
-          GetPlayList(ts.data.playlistId);
+          setArtist(ts);
+          setSection(ts.sections);
         }
-      });
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const GetPlayList = async (id) => {
-    const isMounted = true;
-    try {
-      const responseSecondList = await fetch(link_playList.concat(id));
-      const returnSimilar = await responseSecondList.json();
-
-      const similerListData = await fetch(returnSimilar.play_list);
-
-      await similerListData.json().then((ta) => {
-        if (isMounted) setSimiler(ta.data.song.items);
       });
     } catch (error) {
       console.error(error);
@@ -106,12 +96,88 @@ const Artist = ({ navigation, route }) => {
     getLink();
   }, []);
 
+  const fetchSoundLink = async (id) => {
+    const isMouted = true;
+    //False Is song // True is PodCast
+    try {
+      const responseSong = await fetch(linkMUSIC.concat(id));
+      const jsonSong = await responseSong.json();
+
+      if (isMouted) {
+        return jsonSong.mp3_128 || jsonSong.mp3_320 || jsonSong.mp3_lossless;
+      }
+    } catch (error) {
+      showAlert();
+    }
+
+  };
+
   const onChangeSong = async (songData) => {
     // update local state
     setSong(songData.title);
-    updateState('currentSongData', songData);
+    songObject = {
+      music_id: songData.music_id,
+      album: songData.album,
+      artistsNames: songData.artistsNames,
+      image: songData.image,
+      length: songData.length,
+      title: songData.title,
+      songUrl: await fetchSoundLink(songData.music_id),
+    }
+
+    updateState('currentSongData', songObject);
     navigation.navigate('ModalMusicPlayer');
   };
+
+
+  for (let i = 0; i < Section.length; i++) {
+
+
+    if (Section[i]?.type == 'artist') {
+      ArtistView.push(
+        <ArtistDisplay
+          ListData={Section[i]?.items}
+          heading={Section[i].title}
+        />
+      )
+    }
+
+    if (Section[i]?.type == 'song') {
+      ArtistView.push(
+        <>
+          {Section[i]?.song &&
+            Section[i]?.song.map((s) => (
+              <View key={s.encodeId} style={styles.containerColumn}>
+                <MusicList
+                  key={s.encodeId}
+                  active={song === s.title}
+                  onPress={onChangeSong}
+                  songData={{
+                    music_id: s.encodeId,
+                    album: s.title,
+                    artistsNames: s.artistsNames,
+                    image: s.thumbnailM,
+                    length: s.duration,
+                    title: s.title
+                  }}  
+                />
+              </View>
+            ))}
+
+        </>
+      )
+    }
+
+    if (Section[i]?.type == 'playlist') {
+      ArtistView.push(
+        <AlbumDisplay
+          ListData={Section[i]?.items}
+          heading={Section[i]?.title}
+        />
+      )
+    }
+
+  }
 
   return (
     <View style={gStyle.container}>
@@ -123,7 +189,7 @@ const Artist = ({ navigation, route }) => {
             <Animated.View
               style={[styles.headerLinear, { opacity: opacityHeading }]}
             >
-              <LinearGradient fill={colorOne} height={89} />
+              <LinearGradient fill={colorOne} height={60} />
             </Animated.View>
             <View style={styles.header}>
               <TouchIcon
@@ -131,19 +197,18 @@ const Artist = ({ navigation, route }) => {
                 onPress={() => navigation.goBack(null)}
               />
               <Animated.View style={{ opacity: opacityShuffle }}>
-                <Text style={styles.headerTitle}>{headerData?.name}</Text>
+                <Text style={styles.headerTitle}>{Artist?.name}</Text>
               </Animated.View>
-
               <TouchIcon
                 icon={<Feather color={colors.white} name="more-horizontal" />}
-                onPress={() => {}}
+                onPress={() => { }}
               />
             </View>
           </View>
 
           <ImageBackground
             style={styles.containerFixed}
-            source={{ uri: headerData?.cover }}
+            source={{ uri: Artist?.cover }}
           >
             <View style={{ position: 'absolute', top: 320, left: 10 }}>
               <Text
@@ -155,7 +220,7 @@ const Artist = ({ navigation, route }) => {
                   fontWeight: 'bold'
                 }}
               >
-                {headerData?.name}
+                {Artist?.name}
               </Text>
 
               <Text
@@ -167,7 +232,7 @@ const Artist = ({ navigation, route }) => {
                   fontWeight: 'bold'
                 }}
               >
-                {headerData?.totalFollow} người theo dõi hàng tháng
+                {Artist?.totalFollow} người theo dõi hàng tháng
               </Text>
             </View>
           </ImageBackground>
@@ -189,40 +254,14 @@ const Artist = ({ navigation, route }) => {
                   { opacity: opacityShuffle }
                 ]}
               >
-                <LinearGradient fill={colors.black20} height={50} />
               </Animated.View>
-              <View style={styles.containerShuffle}>
-                <Text
-                  ellipsizeMode="tail"
-                  numberOfLines={1}
-                  style={styles.title}
-                >
-                  Các bài hát phổ biến
-                </Text>
-              </View>
             </View>
-
             <View style={styles.containerSongs}>
-              {similerData &&
-                similerData.map((s) => (
-                  <View key={s.encodeId} style={styles.containerColumn}>
-                    <MusicList
-                      active={song === s.title}
-                      onPress={onChangeSong}
-                      songData={{
-                        music_id: s.encodeId,
-                        album: s.title,
-                        artistsNames: s.artistsNames,
-                        image: s.thumbnailM,
-                        length: s.duration,
-                        title: s.title
-                      }}
-                    />
-                  </View>
-                ))}
-
-              <View style={gStyle.spacer16} />
+              {ArtistView}
             </View>
+
+            <View style={{ marginVertical: showMusicBar ? 230 : 200 }}></View>
+
           </Animated.ScrollView>
         </>
       )}
@@ -315,23 +354,29 @@ const styles = StyleSheet.create({
     height: 200,
     zIndex: device.web ? 20 : 0
   },
+
+  containerColumn: {
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%'
+  },
   albumInfo: {
     ...gStyle.textSpotify12,
     color: colors.greyInactive,
     marginBottom: 48
   },
   containerScroll: {
-    paddingTop: 89
+    paddingTop: Dimensions.get('window').height / 2
   },
   containerSticky: {
-    marginTop: device.iPhoneNotch ? 350 : 70
+    marginTop: device.iPhoneNotch ? 89 : 25
   },
   containerShuffle: {
-    justifyContent: 'flex-start',
+    alignItems: 'center',
+    height: 20,
     shadowColor: colors.blackBg,
     shadowOffset: { height: -10, width: 0 },
-    shadowOpacity: 0.2,
-    shadowRadius: 20
+    shadowOpacity: 0.2
   },
   containerStickyLinear: {
     position: 'absolute',
@@ -350,9 +395,14 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
     textTransform: 'uppercase'
   },
+
   containerSongs: {
+    alignItems: 'center',
     backgroundColor: colors.blackBg,
-    minHeight: 540
+    minHeight: 540,
+    paddingTop: 22,
+    paddingBottom: 30,
+    borderRadius: 20
   },
   row: {
     alignItems: 'center',
@@ -367,4 +417,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Artist;
+export default React.memo(Artist);

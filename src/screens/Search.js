@@ -10,15 +10,13 @@ import {
   FlatList,
   Image
 } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import { colors, device, gStyle } from '../constants';
 
 import MusicList from '../components/Line/MusicList';
 
 import Context from '../context';
 
-// icons
-import SvgSearch from '../icons/Svg.Search';
 
 import { useNavigation } from '@react-navigation/native';
 
@@ -100,7 +98,7 @@ const Search = () => {
                   style={styles.searchPlaceholder}
                 >
                   <View style={gStyle.mR1}>
-                    <SvgSearch />
+                    <AntDesign name="search1" color={colors.black20} size={22}/>
                   </View>
                   <TextInput
                     style={styles.searchPlaceholderText}

@@ -22,13 +22,14 @@ import ArtistDisplay from '../components/Display/ArtistDisplay';
 
 import TouchIcon from '../components/Design/TouchIcon';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
 import con from '../../data';
 // context
 import Context from '../context';
 
 const LinkAblum = con.Domain.concat(con.AlbumLink);
-const LinkEpisode = con.Domain.concat(con.PodCastEpisode);
-
 const linkMUSIC = con.Domain.concat(con.StreamLink);
 
 const Album = ({ navigation, route }) => {
@@ -44,37 +45,20 @@ const Album = ({ navigation, route }) => {
   //Get Song
   const GetDataList = async () => {
     //False mean PlayList
-    if (!data_pass.type) {
-      try {
-        const response = await fetch(LinkAblum.concat(data_pass.id));
-        await response.json().then((ra) => {
-          setDetail(ra);
-          setListMusic(ra.song.items);
-        });
+    try {
+      const response = await fetch(LinkAblum.concat(data_pass.id));
+      await response.json().then((ra) => {
+        setDetail(ra);
+        setListMusic(ra.song);
+      });
 
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      try {
-        
-        // const response = await fetch(LinkEpisode.concat(data_pass.id));
-        // const json = await response.json();
-        // const responsePodCast = await fetch(json.pod);
-        // const tab = await responsePodCast.json();
-        // setListMusic(tab.data.items);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
+
   };
-
-
-
 
   function color_genter() {
     return 'rgb(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ')';
@@ -82,6 +66,7 @@ const Album = ({ navigation, route }) => {
 
   React.useEffect(() => {
     setColor(color_genter());
+
     GetDataList();
   }, []);
 
@@ -91,8 +76,6 @@ const Album = ({ navigation, route }) => {
 
   const [song, setSong] = React.useState(currentSongData.title);
   const scrollY = React.useRef(new Animated.Value(0)).current;
-
-
 
   const fetchSoundLink = async (id) => {
     const isMouted = true;
@@ -121,11 +104,12 @@ const Album = ({ navigation, route }) => {
       image: songData.image,
       length: songData.length,
       title: songData.title,
-      type: data_pass.type,
       songUrl: await fetchSoundLink(songData.music_id),
     }
 
+    updateState('showMusicBar', !showMusicBar);
     updateState('currentSongData', songObject);
+
     navigation.navigate('ModalMusicPlayer');
   };
 
@@ -177,14 +161,6 @@ const Album = ({ navigation, route }) => {
 
           <TouchIcon
             icon={<Feather color={colors.white} name="more-horizontal" />}
-            onPress={() => {
-              // update main state
-              updateState('showMusicBar', !showMusicBar);
-
-              // navigation.navigate('ModalMoreOptions', {
-              //   album
-              // });
-            }}
           />
         </View>
       </View>
@@ -269,26 +245,25 @@ const Album = ({ navigation, route }) => {
                 DataList.map((music) => (
                   <LineItemSong
                     active={song === music.title}
-                    key={music.encodeId}
+                    key={music.id}
                     onPress={onChangeSong}
-                    type={data_pass.type}
                     Data={{
-                      music_id: music.encodeId,
+                      music_id: music.id,
                       album: DataHeader.title,
-                      artistsNames: music.artistsNames,
-                      image: music.thumbnailM,
+                      artistsNames: music.artist,
+                      image: music.artwork,
                       length: music.duration,
-                      title: music.title,
-                      type: data_pass.type
+                      title: music.title
                     }}
                   />
                 ))}
 
+
+              <View style={{ marginVertical: showMusicBar ? 180 : 140 }}></View>
             </View>
           )}
 
 
-          <View style={{ marginBottom: showMusicBar ? 120 : 55 }}></View>
         </Animated.ScrollView>
       )}
     </>
@@ -300,11 +275,8 @@ const Album = ({ navigation, route }) => {
         <BlurView intensity={99} style={styles.blurview} tint="dark" />
       )} */}
 
-      {!data_pass.music_type ? (
-        <DisplayItems DataHeader={data_pass} DataList={listMusic} />
-      ) : (
-        <DisplayItems DataHeader={data_pass} DataList={listMusic} />
-      )}
+      <DisplayItems DataHeader={data_pass} DataList={listMusic} />
+
     </View>
   );
 };
@@ -392,7 +364,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 20
   },
-
   displayDetail: {
     marginHorizontal: 35,
     ...gStyle.textSpotify12,

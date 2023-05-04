@@ -49,8 +49,6 @@ const Banner = ({
                         onPress={() => {
                             navigation.navigate('Album', {
                                 id: item.encodeId,
-                                type: true,
-                                release_data: '',
                                 image: item.banner
                             });
                         }}

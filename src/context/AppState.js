@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes, { any, string } from 'prop-types';
 
+
 // context
 import Context from './index';
 
@@ -19,13 +20,13 @@ class AppState extends React.Component {
           'https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_jpeg/cover/1/b/8/9/1b8958017b04a663eb8c093905dd4d85.jpg',
         length: 262,
         title: 'Vì Mẹ Anh Bắt Chia Tay',
-        type: false,
         songUrl: ''
       },
       specialPodCastData: any,
       isLoading: true,
       showMusicBar: false
     };
+
 
     this.updateState = this.updateState.bind(this);
   }

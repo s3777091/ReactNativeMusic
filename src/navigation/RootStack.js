@@ -7,7 +7,6 @@ import TabNavigation from './TabNavigation';
 
 // screens
 import ModalMusicPlayer from '../screens/ModalMusicPlayer';
-import ModalMoreOptions from '../screens/ModalMoreOptions';
 import HubScreen from '../screens/Hub';
 
 const Stack = createNativeStackNavigator();
@@ -34,16 +33,6 @@ export default () => (
           headerShown: false,
           presentation: 'fullScreenModal',
           animation: 'slide_from_bottom'
-        }}
-      />
-      
-      <Stack.Screen
-        name="ModalMoreOptions"
-        component={ModalMoreOptions}
-        options={{
-          animation: 'slide_from_bottom',
-          headerShown: false,
-          presentation: 'transparentModal'
         }}
       />
 

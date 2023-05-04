@@ -10,10 +10,8 @@ import StackLibrary from './StackLibrary';
 // components
 import CustomTabBar from '../components/Design/CustomTabBar';
 
-// icons
-import SvgTabHome from '../icons/Svg.TabHome';
-import SvgTabLibrary from '../icons/Svg.TabLibrary';
-import SvgTabSearch from '../icons/Svg.TabSearch';
+import { AntDesign, Ionicons } from '@expo/vector-icons';
+
 const Tab = createBottomTabNavigator();
 
 export default () => (
@@ -21,15 +19,16 @@ export default () => (
     screenOptions={({ route }) => ({
       headerShown: false,
       tabBarIcon: ({ active }) => {
-        let icon = <SvgTabHome active={active} />;
-      
+        let icon = <AntDesign name="home" color={colors.white} active={active} size={22}/>;
+
         if (route.name === 'StackSearch') {
-          icon = <SvgTabSearch active={active} />;
+          icon = <AntDesign name="search1" color={colors.white} active={active} size={22}/>;
         } else if (route.name === 'StackLibrary') {
-          icon = <SvgTabLibrary active={active} />;
+          icon = <Ionicons name="albums-outline" color={colors.white} active={active} size={22}/>;
         }
 
         return icon;
+
       },
       tabBarActiveTintColor: colors.white,
       tabBarInactiveTintColor: colors.greyInactive,

@@ -60,13 +60,15 @@ BarMusicPlayer.propTypes = {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    bottom: 40,
+    bottom: 60,
     alignSelf: 'center',
     backgroundColor: '#230020',
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    left: 10,
+    right: 10,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15
   },

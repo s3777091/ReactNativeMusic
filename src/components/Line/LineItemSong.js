@@ -38,66 +38,21 @@ const SongItems = ({ Active_colors, NavigationSong, song }) => (
   </>
 );
 
-const PodCastItems = ({ Active_colors, NavigationSong, podCast }) => (
-  <>
-    <View style={gStyle.container}>
-      <TouchableOpacity
-        style={{
-          justifyContent: 'center',
-          flexDirection: 'row',
-          marginHorizontal: 35
-        }}
-        onPress={() => NavigationSong(podCast)}
-      >
-        <Image
-          source={{ uri: podCast.image }}
-          style={{
-            width: IMAGE_SIZE,
-            height: IMAGE_SIZE,
-            borderRadius: 5
-          }}
-        />
-
-        <View style={{ flexDirection: 'column' }}>
-          {podCast.title.length > 30 ? (
-            <Text style={[styles.title, { color: Active_colors }]}>
-              {podCast.title}
-            </Text>
-          ) : (
-            <Text style={[styles.title, { color: Active_colors }]}>
-              {podCast.title}
-            </Text>
-          )}
-        </View>
-      </TouchableOpacity>
-    </View>
-  </>
-);
-
-const LineItemSong = ({ active, onPress, Data, type }) => {
+const LineItemSong = ({ active, onPress, Data }) => {
   const activeColor = active ? colors.brandPrimary : colors.white;
   return (
     <View style={styles.container}>
-      {type ? (
-        <PodCastItems
-          Active_colors={activeColor}
-          NavigationSong={onPress}
-          podCast={Data}
-        />
-      ) : (
-        <SongItems
-          Active_colors={activeColor}
-          NavigationSong={onPress}
-          song={Data}
-        />
-      )}
+      <SongItems
+        Active_colors={activeColor}
+        NavigationSong={onPress}
+        song={Data}
+      />
     </View>
   );
 };
 
 LineItemSong.defaultProps = {
-  active: false,
-  type: false
+  active: false
 };
 
 LineItemSong.propTypes = {
@@ -105,8 +60,7 @@ LineItemSong.propTypes = {
 
   // required
   onPress: PropTypes.func,
-  Data: PropTypes.any,
-  type: PropTypes.bool
+  Data: PropTypes.any
 };
 
 const styles = StyleSheet.create({

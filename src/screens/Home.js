@@ -24,7 +24,6 @@ const wait = (timeout) => {
 };
 
 import Context from '../context';
-import { func } from 'prop-types';
 
 const Home = () => {
 
@@ -40,8 +39,6 @@ const Home = () => {
   const [DataPage, setDataPage] = React.useState([]);
 
   const { showMusicBar } = React.useContext(Context);
-
-
 
 
   const getData = async () => {
@@ -105,9 +102,9 @@ const Home = () => {
   });
 
 
-
   for (let i = 0; i < DataPage.length; i++) {
     for (let h = 0; h < DataPage[i].length; h++) {
+
       if (DataPage[i][h]?.type == 'banner') {
         AlbumViews.push(
           <>
@@ -116,6 +113,7 @@ const Home = () => {
               ListData={con.artistData}
               heading={'Nghệ sĩ nổi bật'}
             />
+            
             <Banner
               key={DataPage[i][h]?.encodeId}
               ListData={DataPage[i][h]?.playlist}
@@ -128,29 +126,15 @@ const Home = () => {
       if (DataPage[i][h]?.type == 'playlist') {
         AlbumViews.push(
           <AlbumDisplay
-            key={DataPage[i][h]?.encodeId}
-            ListData={DataPage[i][h]?.playlist}
-            heading={DataPage[i][h]?.tilte}
-            tagline={DataPage[i][h]?.playlist[0].sortDescription}
-          />
-        )
-      }
-
-      if (DataPage[i][h]?.type == 'livestream') {
-        AlbumViews.push(
-          <AlbumDisplay
-            key={DataPage[i][h]?.encodeId}
-            ListData={DataPage[i][h]?.playlist}
-            IsPodCast={true}
-            heading={DataPage[i][h]?.tilte}
-            tagline={DataPage[i][h]?.playlist[0].sortDescription}
-          />
+          ListData={DataPage[i][h]?.playlist}
+          heading={DataPage[i][h]?.tilte}
+          tagline={DataPage[i][h]?.playlist[0].sortDescription || ""}
+        />
         )
       }
 
     }
   }
-
 
   return (
     <React.Fragment>
@@ -187,7 +171,8 @@ const Home = () => {
         ) : (
           <>
             {AlbumViews}
-            <View style={{ marginBottom: showMusicBar ? 100 : 50 }}></View>
+
+            <View style={{ marginVertical: showMusicBar ? 70 : 45 }}></View>
           </>
         )}
       </Animated.ScrollView>

@@ -33,4 +33,4 @@ TouchIcon.propTypes = {
   ])
 };
 
-export default TouchIcon;
+export default React.memo(TouchIcon);
