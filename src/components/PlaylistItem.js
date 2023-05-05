@@ -3,11 +3,10 @@ import PropTypes from 'prop-types';
 import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
 import { colors, gStyle } from '../constants';
 
-function colorGenter() {
-  return '#'.concat(Math.floor(Math.random() * 16777215).toString(16));
-}
 
-import AutoScroll from "@homielab/react-native-auto-scroll";
+function colorGenter() {
+  return 'rgb(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ')';
+}
 
 const PlaylistItem = ({  onPress, ListData }) => (
   <TouchableOpacity
@@ -16,15 +15,8 @@ const PlaylistItem = ({  onPress, ListData }) => (
     style={[styles.playlistItem, { backgroundColor:  colorGenter() }]}
   >
     <View style={styles.containerSpotify}>
-      {ListData.title.length > 7 ? (
-        <AutoScroll style={{width: 90}} endPadding={50}>
-        <Text style={styles.playlistTitle}>
-          {ListData.title}
-        </Text>
-        </AutoScroll>
-      ) : (
-        <Text style={styles.playlistTitle}>{ListData.title}</Text>
-      )}
+    <Text numberOfLines={2} style={styles.playlistTitle}>{ListData.title}</Text>
+
       <View style={{transform: [{ rotate: '20deg'}]}}>
         <Image source={{ uri: ListData.thumbnail }} style={styles.image} />
       </View>
@@ -55,12 +47,13 @@ const styles = StyleSheet.create({
   image: {
     width: 60,
     height: 60,
-    borderRadius: 2,
+    borderRadius: 5,
   },
   playlistTitle: {
+    width: 97,
     ...gStyle.textSpotifyBold22,
     color: colors.white
   }
 });
 
-export default PlaylistItem;
+export default React.memo(PlaylistItem);

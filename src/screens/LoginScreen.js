@@ -46,8 +46,6 @@ const LoginScreen = ({ navigation}) => {
           }}>
           Login
         </Text>
-
-
           
         <InputField
           label={'Email User'}

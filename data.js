@@ -8,7 +8,12 @@ const AlbumLink = "/album?id=";
 const StreamLink = "/mp3?id=";
 const LyrickLink = "/lyrick?id=";
 const ArtistLink = "/artist?alias=";
+const HubLink = "/hub";
 
+const HubDetal = '/hub/detail?id='
+
+
+const SearchLink = "/search?key=";
 const lang = "&language=vi";
 const SuggestKey = `https://ac.zingmp3.vn/v1/web/suggestion-keywords?num=10&query=`
 
@@ -71,7 +76,10 @@ export default {
     VideoLink,
     AlbumLink,
     StreamLink,
+    HubLink,
+    HubDetal,
     ArtistLink,
+    SearchLink,
     LyrickLink,
     artistData,
     SuggestKey,

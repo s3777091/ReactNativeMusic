@@ -15,28 +15,57 @@ import { Feather } from '@expo/vector-icons';
 import MusicList from '../components/Line/MusicList';
 import ArtistDisplay from '../components/Display/ArtistDisplay';
 
-import con from '../../data';
-const link = con.Domain.concat(con.Search);
-
 import Context from '../context';
 import AlbumDisplay from '../components/Display/AlbumDisplay';
+import con from '../../data';
+
+const link = con.Domain.concat(con.SearchLink);
+const linkMUSIC = con.Domain.concat(con.StreamLink);
+
+
 const SearchResults = ({ navigation, route }) => {
-  const { currentSongData, updateState } =
+
+  const { currentSongData, updateState , showMusicBar} =
     React.useContext(Context);
 
   const [song, setSong] = React.useState(currentSongData.title);
-
-  const onChangeSong = async (songData) => {
-    // update local state
-    setSong(songData.title);
-    updateState('currentSongData', songData);
-    navigation.navigate('ModalMusicPlayer');
-  };
   const [Results, setSearchResults] = React.useState();
   const [isLoading, setLoading] = React.useState(true);
-
   const [notFound, SetNotFoud] = React.useState(false);
   const textValue = route.params.textSearchValue;
+
+  const fetchSoundLink = async (id) => {
+    const isMouted = true;
+    //False Is song // True is PodCast
+    try {
+      const responseSong = await fetch(linkMUSIC.concat(id));
+      const jsonSong = await responseSong.json();
+
+      if (isMouted) {
+        return jsonSong.mp3_128 || jsonSong.mp3_320 || jsonSong.mp3_lossless;
+      }
+    } catch (error) {
+      showAlert();
+    }
+
+  };
+
+  const onChangeSong = async (songData) => {
+    setSong(songData.title);
+
+    const songObject = {
+      music_id: songData.music_id,
+      album: songData.album,
+      artistsNames: songData.artistsNames,
+      image: songData.image,
+      length: songData.length,
+      title: songData.title,
+      songUrl: await fetchSoundLink(songData.music_id),
+    }
+
+    updateState('currentSongData', songObject);
+    navigation.navigate('ModalMusicPlayer');
+  };
 
   //Clean Code
   React.useEffect(() => {
@@ -45,10 +74,10 @@ const SearchResults = ({ navigation, route }) => {
       isLoading,
       notFound
         ? () => {
-            setSearchResults('');
-            setLoading(true);
-            SetNotFoud(false);
-          }
+          setSearchResults('');
+          setLoading(true);
+          SetNotFoud(false);
+        }
         : undefined
     );
   }, [Results, isLoading, notFound]);
@@ -56,21 +85,15 @@ const SearchResults = ({ navigation, route }) => {
   const getSearchData = async () => {
     try {
       const response = await fetch(link.concat(textValue));
-      const json = await response.json();
-
-      const searchResult = await fetch(json.search);
-      await searchResult.json().then((dataSearch) => {
-        if (
-          dataSearch.data.counter.song == 0 &&
-          dataSearch.data.counter.artist == 0 &&
-          dataSearch.data.counter.playlist == 0
-        ) {
+      await response.json().then((ra) => {
+        if (ra.songs == 0 && ra.artists == 0 && ra.playlists == 0) {
           SetNotFoud(true);
           setSearchResults('null');
         } else {
-          setSearchResults(dataSearch.data);
+          setSearchResults(ra);
         }
       });
+
     } catch (error) {
       console.error(error);
     } finally {
@@ -106,37 +129,39 @@ const SearchResults = ({ navigation, route }) => {
         >
           {!notFound ? (
             <View style={{ marginTop: 20 }}>
+
               <AlbumDisplay
                 ListData={Results.playlists}
                 heading="Play List Theo Kết quả"
-                IsPodCast={false}
+              />
+
+              <ArtistDisplay
+                ListData={Results.artists}
+                heading="Nghệ Sĩ Theo kết quả"
               />
 
               <Text style={styles.heading}>Bài hát theo kết quả</Text>
 
               {Results.songs &&
                 Results.songs.map((s) => (
-                  <View key={s.encodeId} style={styles.containerColumn}>
+                  <View key={s?.encodeId} style={styles.containerColumn}>
                     <MusicList
                       active={song === s.title}
                       onPress={onChangeSong}
                       songData={{
-                        music_id: s.encodeId,
-                        album: s.title,
-                        artistsNames: s.artistsNames,
-                        image: s.thumbnailM,
-                        length: s.duration,
-                        title: s.title
+                        music_id: s?.encodeId,
+                        album: s?.title,
+                        artistsNames: s?.artistsNames,
+                        image: s?.thumbnailM,
+                        length: s?.duration,
+                        title: s?.title
                       }}
                     />
                   </View>
                 ))}
+                
+              <View style={{ marginVertical: showMusicBar ? 62 : 42 }}></View>
 
-              <ArtistDisplay
-                ListData={Results.artists}
-                heading="Nghệ Sĩ Theo kết quả"
-                IsCircle={true}
-              />
             </View>
           ) : (
             <View
@@ -214,4 +239,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default SearchResults;
+export default React.memo(SearchResults);

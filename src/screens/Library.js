@@ -15,8 +15,17 @@ import PlaylistItem from '../components/PlaylistItem';
 import { useNavigation } from '@react-navigation/native';
 import con from '../../data';
 import { SafeAreaView } from 'react-native-safe-area-context';
-const link = con.Domain.concat(con.ALBUM);
+
+import Context from '../context';
+
+
+const link = con.Domain.concat(con.HubLink);
+
+
 const Library = () => {
+
+  const { showMusicBar } = React.useContext(Context);
+
   const [dataAlbum, SetDataAlbums] = React.useState();
   const [isLoading, setLoading] = React.useState(true);
 
@@ -24,10 +33,8 @@ const Library = () => {
     const isMounted = true;
     try {
       const response = await fetch(link);
-      const json = await response.json();
-      const responseHome = await fetch(json.album);
-      await responseHome.json().then((dataHome) => {
-        if (isMounted) SetDataAlbums(dataHome.data);
+      await response.json().then((ra) => {
+        if (isMounted) SetDataAlbums(ra);
       });
     } catch (error) {
       console.error(error);
@@ -160,6 +167,10 @@ const Library = () => {
             </>
           )}
         </View>
+
+        <View style={{ marginVertical: showMusicBar ? 62 : 42 }}></View>
+
+
       </Animated.ScrollView>
     </SafeAreaView>
   );
@@ -190,4 +201,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Library;
+export default React.memo(Library);

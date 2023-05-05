@@ -9,14 +9,8 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { colors, gStyle } from '../../constants';
-
-
-
-
-import AutoScroll from "@homielab/react-native-auto-scroll";
 import { FlashList } from "@shopify/flash-list";
-import Context from '../../context';
-//Data ? Heading ? tagline ? IsBigThumbnail ? IsPodCast
+
 const AlbumNewsDays = ({
   ListData,
   heading,
@@ -24,14 +18,12 @@ const AlbumNewsDays = ({
 }) => {
   const navigation = useNavigation();
 
-  const { updateState } = React.useContext(Context);
-
   return (
     <View style={styles.container}>
 
       {heading && <Text style={styles.heading}>{heading}</Text>}
 
-      {tagline && <Text style={styles.tagline}>{tagline}</Text>}
+      {tagline && <Text numberOfLines={2} style={styles.tagline}>{tagline}</Text>}
 
       <FlashList
         initialNumToRender={4}

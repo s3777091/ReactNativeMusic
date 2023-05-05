@@ -10,10 +10,6 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { colors, gStyle } from '../../constants';
 
-import Context from '../../context';
-
-
-
 import { FlashList } from "@shopify/flash-list";
 
 const Banner = ({
@@ -23,8 +19,6 @@ const Banner = ({
 
     const navigation = useNavigation();
 
-    const { updateState } = React.useContext(Context);
-
     return (
         <View style={styles.container}>
             {heading && <Text style={styles.heading}>{heading}</Text>}
@@ -33,7 +27,7 @@ const Banner = ({
                 contentContainerStyle={styles.containerContent}
                 data={ListData}
                 horizontal
-                getItemLayout={(ListData, index) => ({
+                getItemLayout={(_ListData, index) => ({
                     length: 70,
                     offset: 70 * index,
                     index

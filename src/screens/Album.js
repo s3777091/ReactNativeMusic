@@ -95,7 +95,8 @@ const Album = ({ navigation, route }) => {
   const onChangeSong = async (songData) => {
     // update local state
     setSong(songData.title);
-    songObject = {
+
+    const songObject = {
       music_id: songData.music_id,
       album: songData.album,
       artistsNames: songData.artistsNames,
@@ -163,18 +164,17 @@ const Album = ({ navigation, route }) => {
         </View>
       </View>
 
+      
+
       <View style={styles.containerFixed}>
-        <View style={styles.containerLinear}>
+        
+      <View style={styles.containerLinear}>
           <LinearGradient fill={colorOne} height={(Dimensions.get('window').height / 2) + 89} />
         </View>
         <View style={styles.containerImage}>
           <Image source={{ uri: DataHeader.image }} style={styles.image} />
         </View>
-        <View style={styles.containerTitle}>
-          <Text ellipsizeMode="tail" numberOfLines={1} style={styles.title}>
-            {DataHeader.title}
-          </Text>
-        </View>
+        
         <View style={styles.containerAlbum}>
           <Text style={styles.albumInfo}>
             {`Album by ${DataHeader.artist}`}
@@ -182,7 +182,6 @@ const Album = ({ navigation, route }) => {
         </View>
 
         <View style={styles.containerDetail}>
-
           <TouchIcon style={styles.iconDetail}
             icon={<Feather name="download" color={colors.white} />}
           />

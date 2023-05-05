@@ -8,10 +8,14 @@ import {
   StatusBar,
   ActivityIndicator,
   FlatList,
+
   Image
 } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
+
 import { colors, device, gStyle } from '../constants';
+
+import { debounce } from 'lodash';
 
 import MusicList from '../components/Line/MusicList';
 
@@ -29,14 +33,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const linkRadio = con.SuggestKey;
 
+const linkMUSIC = con.Domain.concat(con.StreamLink);
+
 const Search = () => {
   const navigation = useNavigation();
 
-  const [TextSearch, setTextSearch] = React.useState();
 
+
+  const [TextSearch, setTextSearch] = React.useState('');
+
+  const textInputRef = React.useRef(null);
   const [listSuggest, setListSuggest] = React.useState();
 
   const scrollY = React.useRef(new Animated.Value(0)).current;
+
 
   const NavigateToSearchResults = async () => {
     navigation.navigate('SearchResults', {
@@ -44,33 +54,69 @@ const Search = () => {
     });
   };
 
-  const GetListSearchSuggest = async (text) => {
+
+  const handleTextChange = async (text) => {
     setTextSearch(text);
-    const isMounted = true;
     try {
       const responseData = await fetch(
         linkRadio.concat(text).concat('&language=vi')
       );
 
       await responseData.json().then((tas) => {
-        if (isMounted) setListSuggest(tas?.data);
+        setListSuggest(tas?.data);
       });
     } catch (error) {
       console.error(error);
     }
   };
 
-  const { currentSongData, updateState } =
+
+  const fetchSoundLink = async (id) => {
+    const isMouted = true;
+    //False Is song // True is PodCast
+    try {
+      const responseSong = await fetch(linkMUSIC.concat(id));
+      const jsonSong = await responseSong.json();
+
+      if (isMouted) {
+        return jsonSong.mp3_128 || jsonSong.mp3_320 || jsonSong.mp3_lossless;
+      }
+    } catch (error) {
+      showAlert();
+    }
+
+  };
+
+  const onChangeSong = async (songData) => {
+    setSong(songData.title);
+
+    const songObject = {
+      music_id: songData.music_id,
+      album: songData.album,
+      artistsNames: songData.artistsNames,
+      image: songData.image,
+      length: songData.length,
+      title: songData.title,
+      songUrl: await fetchSoundLink(songData.music_id),
+    }
+
+    updateState('currentSongData', songObject);
+    navigation.navigate('ModalMusicPlayer');
+  };
+
+  const handleOnSubmitEditing = (event) => {
+    event.preventDefault();
+    NavigateToSearchResults();
+    textInputRef.current.blur();
+    setTextSearch('');
+  };
+
+  const { currentSongData, updateState, showMusicBar } =
     React.useContext(Context);
 
   const [song, setSong] = React.useState(currentSongData.title);
 
-  const onChangeSong = async (songData) => {
-    // update local state
-    setSong(songData.title);
-    updateState('currentSongData', songData);
-    navigation.navigate('ModalMusicPlayer');
-  };
+
 
   // search start (24 horizontal padding )
   const searchStart = device.width - 48;
@@ -81,6 +127,7 @@ const Search = () => {
     outputRange: [searchStart, searchEnd],
     extrapolate: 'clamp'
   });
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -98,17 +145,19 @@ const Search = () => {
                   style={styles.searchPlaceholder}
                 >
                   <View style={gStyle.mR1}>
-                    <AntDesign name="search1" color={colors.black20} size={22}/>
+                    <AntDesign name="search1" color={colors.black20} size={22} />
                   </View>
+
                   <TextInput
+                    ref={textInputRef}
                     style={styles.searchPlaceholderText}
                     fontStyle={colors.white}
                     value={TextSearch}
-                    onChangeText={(text) => GetListSearchSuggest(text)}
+                    autoFocus={true}
+                    onChangeText={handleTextChange}
                     placeholderTextColor={colors.black40}
                     placeholder="Tìm kiếm nội dung ưa thích"
-                    autoFocus={true}
-                    onSubmitEditing={NavigateToSearchResults}
+                    onSubmitEditing={handleOnSubmitEditing}
                   />
                 </TouchableOpacity>
 
@@ -151,7 +200,7 @@ const Search = () => {
                       onPress={onChangeSong}
                       songData={{
                         music_id: item?.id,
-                        album: item.title,
+                        album: item?.title,
                         artistsNames: item?.artists[0]?.name,
                         image: item?.thumb,
                         length: item?.duration,
@@ -185,6 +234,8 @@ const Search = () => {
                 </>
               )}
             />
+
+            <View style={{ marginVertical: showMusicBar ? 60 : 40 }}></View>
           </View>
         )}
         removeClippedSubviews
@@ -217,6 +268,8 @@ const Search = () => {
           </TouchableOpacity>
         )}
       />
+
+
     </SafeAreaView>
   );
 };
@@ -249,7 +302,8 @@ const styles = StyleSheet.create({
   },
   searchPlaceholderText: {
     ...gStyle.textSpotify16,
-    color: colors.blackBg
+    color: colors.blackBg,
+    width: 250
   },
   sectionHeading: {
     ...gStyle.textSpotifyBold18,

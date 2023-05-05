@@ -19,28 +19,22 @@ import ListHub from '../components/Line/ListHub';
 
 import con from '../../data';
 import { SafeAreaView } from 'react-native-safe-area-context';
+;
+const link = con.Domain.concat(con.HubDetal);
 
-const link = con.Domain.concat(con.GET_Hub);
-
-const Hub = ({ navigation, route}) => {
+const Hub = ({ navigation, route }) => {
   const idMusic = route.params;
 
   const [ColorOne, SetColorOne] = React.useState();
   const [HubDetailsList, setHubDetail] = React.useState();
   const [isLoading, setLoading] = React.useState(true);
 
-
   const getHubData = async () => {
     const isMounted = true;
     try {
       const response = await fetch(link.concat(idMusic.final_Id));
-      const json = await response.json();
-
-      const hubResults = await fetch(json.hub_detail);
-      await hubResults.json().then((dataOut) => {
-        if (isMounted) {
-          setHubDetail(dataOut.data.sections[0].items);
-        }
+      await response.json().then((ra) => {
+        if (isMounted) setHubDetail(ra?.playList);
       });
     } catch (error) {
       console.error(error);
@@ -55,8 +49,10 @@ const Hub = ({ navigation, route}) => {
   }, []);
 
   function color_genter() {
-    return '#'.concat(Math.floor(Math.random() * 16777215).toString(16));
+    return 'rgb(' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ',' + (Math.floor(Math.random() * 256)) + ')';
   }
+
+
   const scrollY = React.useRef(new Animated.Value(0)).current;
   const headingRange = device.web ? [140, 200] : [230, 280];
   const shuffleRange = device.web ? [40, 80] : [40, 80];
@@ -124,10 +120,8 @@ const Hub = ({ navigation, route}) => {
                       onPress={() =>
                         navigation.navigate('Album', {
                           id: hu.encodeId,
-                          type: false,
                           title: hu.title,
                           artist: hu.artistsNames,
-                          release_data: hu.releaseDate,
                           image: hu.thumbnailM
                         })
                       }
@@ -138,6 +132,8 @@ const Hub = ({ navigation, route}) => {
             </>
           )}
         </View>
+
+        <View style={{ marginVertical: 30 }}></View>
       </Animated.ScrollView>
     </SafeAreaView>
   );
@@ -179,7 +175,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 24,
+    paddingHorizontal: 10,
     paddingTop: device.iPhoneNotch ? 48 : 24,
     position: 'absolute',
     top: 0,
@@ -286,4 +282,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Hub;
+export default React.memo(Hub);

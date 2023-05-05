@@ -8,10 +8,7 @@ import {
   View
 } from 'react-native';
 
-
 import { FlashList } from "@shopify/flash-list";
-
-
 import { useNavigation } from '@react-navigation/native';
 import { colors, gStyle } from '../../constants';
 
