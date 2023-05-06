@@ -1,4 +1,4 @@
-const Domain = "http://192.168.0.104:3000";
+const Domain = "http://192.168.0.13:3000";
 
 
 const Home = "/page?page=";
@@ -8,6 +8,7 @@ const VideoLink = "/video?id=";
 const AlbumLink = "/album?id=";
 
 const StreamLink = "/mp3?id=";
+<<<<<<< Updated upstream
 const LyrickLink = "/lyrick?id="
 
 const Home_Chart = "/api/v2/get_home_chart";
@@ -30,6 +31,11 @@ const PodCastDetail = "/api/v2/pod_cast?code=";
 const PodCastEpisode = "/api/v2/pod_cast_episode?code=";
 const PodCastListen = "/api/v2/listen_pod_cast?code=";
 
+=======
+const LyrickLink = "/lyrick?id=";
+const ArtistLink = "/artist?alias=";
+
+>>>>>>> Stashed changes
 const lang = "&language=vi";
 const SuggestKey = `https://ac.zingmp3.vn/v1/web/suggestion-keywords?num=10&query=`
 
@@ -92,6 +98,10 @@ export default {
     VideoLink,
     AlbumLink,
     StreamLink,
+<<<<<<< Updated upstream
+=======
+    ArtistLink,
+>>>>>>> Stashed changes
     LyrickLink,
 
 

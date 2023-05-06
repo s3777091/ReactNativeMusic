@@ -10,7 +10,11 @@ import {
   FlatList,
   Image
 } from 'react-native';
+<<<<<<< Updated upstream
 import { FontAwesome } from '@expo/vector-icons';
+=======
+import { AntDesign } from '@expo/vector-icons';
+>>>>>>> Stashed changes
 import { colors, device, gStyle } from '../constants';
 
 import MusicList from '../components/Line/MusicList';
@@ -100,7 +104,11 @@ const Search = () => {
                   style={styles.searchPlaceholder}
                 >
                   <View style={gStyle.mR1}>
+<<<<<<< Updated upstream
                     <SvgSearch />
+=======
+                    <AntDesign name="search1" color={colors.black20} size={22}/>
+>>>>>>> Stashed changes
                   </View>
                   <TextInput
                     style={styles.searchPlaceholderText}
@@ -108,7 +116,11 @@ const Search = () => {
                     value={TextSearch}
                     onChangeText={(text) => GetListSearchSuggest(text)}
                     placeholderTextColor={colors.black40}
+<<<<<<< Updated upstream
                     placeholder="Tìm kiếm nội dung ưa thích 🍕"
+=======
+                    placeholder="Tìm kiếm nội dung ưa thích"
+>>>>>>> Stashed changes
                     autoFocus={true}
                     onSubmitEditing={NavigateToSearchResults}
                   />

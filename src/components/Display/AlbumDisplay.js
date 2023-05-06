@@ -12,6 +12,11 @@ import { colors, gStyle } from '../../constants';
 
 
 
+<<<<<<< Updated upstream
+=======
+
+import AutoScroll from "@homielab/react-native-auto-scroll";
+>>>>>>> Stashed changes
 import { FlashList } from "@shopify/flash-list";
 import Context from '../../context';
 //Data ? Heading ? tagline ? IsBigThumbnail ? IsPodCast
@@ -28,6 +33,10 @@ const AlbumNewsDays = ({
   return (
     <View style={styles.container}>
       {heading && <Text style={styles.heading}>{heading}</Text>}
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
       {tagline && <Text style={styles.tagline}>{tagline}</Text>}
 
       <FlashList
