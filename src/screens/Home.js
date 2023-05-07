@@ -20,6 +20,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const pageCount = con.Domain.concat(con.Home);
 
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Feather } from '@expo/vector-icons';
 import TouchIcon from '../components/Design/TouchIcon';
 
@@ -37,6 +39,11 @@ const Home = () => {
   const navigation = useNavigation();
 
   const [Greeting, SetGreeting] = React.useState();
+
+
+
+  const [isUser, setLoadingUser] = React.useState(true);
+  const [userDetail, SetUser] = React.useState(null);
 
   //Checking load
   const [isLoading, setLoading] = React.useState(true);
@@ -73,12 +80,13 @@ const Home = () => {
   const greeting = async () => {
     const hour = new Date().getHours();
     if (hour < 12) {
-      SetGreeting('Chào buổi sáng');
+      SetGreeting(`Chào buổi sáng`);
     } else if (hour < 18) {
-      SetGreeting('Chào buổi Chiều');
+      SetGreeting(`Chào buổi Chiều`);
     } else {
-      SetGreeting('Chào buổi Tối');
+      SetGreeting(`Chào buổi Tối`);
     }
+
   };
 
 
@@ -99,6 +107,30 @@ const Home = () => {
     greeting();
     loadData();
   }, []);
+
+  React.useEffect(() => {
+    async function prepare() {
+      try {
+        const userDetail = await AsyncStorage.getItem('userDetail');
+        if (userDetail !== null) {
+          const data = JSON.parse(userDetail);
+          SetUser(data);
+        } else {
+          setLoadingUser(true);
+        }
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setLoadingUser(false);
+        console.log(userDetail);
+      }
+    }
+    prepare();
+
+
+
+  }, []);
+
 
   const scrollY = React.useRef(new Animated.Value(0)).current;
 
@@ -166,10 +198,18 @@ const Home = () => {
             {Greeting}
           </Text>
 
-          <TouchIcon
-            onPress={() => navigation.navigate("Login")}
-            icon={<Feather color={colors.white} name="user" />}
-          />
+
+          {isUser ? (
+            <TouchIcon
+              onPress={() => navigation.navigate("Login")}
+              icon={<Feather color={colors.white} name="user" />}
+            />
+          ) : (
+            <View style={styles.avatar_container}>
+              <Image source={{ uri: userDetail.Avatar }} style={styles.avatar_styles} />
+            </View>
+          )}
+
         </View>
 
 
@@ -251,7 +291,17 @@ const styles = StyleSheet.create({
     color: colors.greyLight,
     marginLeft: 16,
     marginVertical: 2
-  }
+  },
+  avatar_container: {
+    borderRadius: 50,
+    width: 30,
+    height: 30,
+    overflow: 'hidden'
+  },
+  avatar_styles: {
+    width: '100%',
+    height: '100%',
+  },
 });
 
 export default React.memo(Home);

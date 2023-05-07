@@ -1,4 +1,4 @@
-import { Image } from 'react-native';
+import { Image, Alert } from 'react-native';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
 
@@ -47,10 +47,32 @@ const millisToMinutesAndSeconds = (millis) => {
 }
 
 
+
+const showCheck = (title, des) =>
+  Alert.alert(
+    `${title}`,
+    `${des}`,
+    [
+      {
+        text: 'Go Back',
+        style: 'cancel'
+      }
+    ],
+    {
+      cancelable: true,
+      onDismiss: () =>
+        Alert.alert(
+          'This alert was dismissed by tapping outside of the alert dialog.'
+        )
+    }
+  );
+
+
 export default {
   cacheFonts,
   cacheImages,
   loadAssetsAsync,
   formatTime,
+  showCheck,
   millisToMinutesAndSeconds
 };

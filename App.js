@@ -6,6 +6,7 @@ import { func } from './src/constants';
 // root stack navigation
 import RootStack from './src/navigation/RootStack';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 // app context state
 import AppState from './src/context/AppState';
 
@@ -15,10 +16,21 @@ const App = () => {
   React.useEffect(() => {
     async function prepare() {
       try {
-        // keeps the splash screen visible while assets are cached
         await SplashScreen.preventAutoHideAsync();
-        // pre-load/cache assets: images, fonts, and videos
         await func.loadAssetsAsync();
+        const userDetail = await AsyncStorage.getItem('userDetail');
+        if (userDetail !== null) {
+          const data = JSON.parse(userDetail);
+          
+          const detail = {
+            Avatar: data.Avatar, 
+            Email: data.Email, 
+            isActive: data.isActive, 
+            isLogin: data.isLogin, 
+            name: data.name
+          }
+          updateState('userDetail', detail);
+        }
       } catch (e) {
         // console.warn(e);
       } finally {

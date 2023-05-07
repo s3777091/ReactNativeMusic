@@ -4,7 +4,9 @@ import {
   View,
   Text,
   TextInput,
+  StyleSheet,
   TouchableOpacity,
+  Alert
 } from 'react-native';
 
 import PropTypes from 'prop-types';
@@ -19,20 +21,92 @@ import TwitterSVG from '../assets/images/twitter.svg'
 
 import CustomButton from '../components/Design/CustomButton';
 
-import InputField from '../components/Design/InputField';
-import { colors } from '../constants';
+import { colors, func } from '../constants';
 
 
-const LoginScreen = ({ navigation}) => {
+import con from '../../data';
+
+const LOGIN_URL = con.Domain.concat(con.Login);
+
+
+const LoginScreen = ({ navigation }) => {
+
+  const [userEmail, setUserEmail] = React.useState("");
+  const [userPwd, setUserPwd] = React.useState("");
+
+  const LoginUser = async () => {
+    try {
+      
+      const payload = JSON.stringify({
+        email: userEmail,
+        pwd: userPwd
+      });
+
+      const responseLogin = await fetch(LOGIN_URL, {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: payload,
+      })
+
+      if(responseLogin.status === 407){
+        func.showCheck('Wrong password', 'pls check your password again');
+      } else if (responseLogin.status === 401) {
+        func.showCheck('Null user found', 'Your account not existing pls create new one !!')
+      }
+
+      if (responseLogin.status >= 200 && responseLogin.status <= 299) {
+        await responseLogin.json().then(async (ts) => {
+          try {
+            await AsyncStorage.setItem('userDetail', JSON.stringify(ts));
+          } catch (error) {
+            console.log(error);
+          } finally {
+            showAlert('Login success', `welcomback ${userEmail}`);
+          }
+        });
+      
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+
+  };
+
+  
+  const showAlert = (title, des) =>
+    Alert.alert(
+      `${title}`,
+      `${des}`,
+      [
+        {
+          text: 'Go Back',
+          onPress: () => navigation.goBack(null),
+          style: 'cancel'
+        }
+      ],
+      {
+        cancelable: true,
+        onDismiss: () =>
+          Alert.alert(
+            'This alert was dismissed by tapping outside of the alert dialog.'
+          )
+      }
+    );
+
+
   return (
     <SafeAreaView style={{ flex: 1, justifyContent: 'center' }}>
       <View style={{ paddingHorizontal: 25 }}>
         <View style={{ alignItems: 'center' }}>
 
-        <LoginSVG
+          <LoginSVG
             height={300}
             width={300}
-            style={{transform: [{rotate: '-5deg'}]}}
+            style={{ transform: [{ rotate: '-5deg' }] }}
           />
 
         </View>
@@ -46,36 +120,55 @@ const LoginScreen = ({ navigation}) => {
           }}>
           Login
         </Text>
-          
-        <InputField
-          label={'Email User'}
-          icon={
-            <MaterialIcons
-              name="alternate-email"
-              size={20}
-              color={colors.greyLight}
-              style={{ marginRight: 5 }}
-            />
-          }
-          keyboardType="email-address"
-        />
 
-        <InputField
-          label={'Password'}
-          icon={
-            <Ionicons
-              name="ios-lock-closed-outline"
-              size={20}
-              color={colors.greyLight}
-              style={{ marginRight: 5 }}
-            />
-          }
-          inputType="password"
-          fieldButtonLabel={"Forgot?"}
-          fieldButtonFunction={() => { }}
-        />
 
-        <CustomButton label={"Login"} onPress={() => { }} />
+        <View
+          style={styles.container_input}>
+          <MaterialIcons
+            name="alternate-email"
+            size={20}
+            color="#666"
+            style={{ marginRight: 5 }}
+          />
+          <TextInput
+            style={styles.input}
+            onChangeText={text => setUserEmail(text)}
+            fontStyle={colors.white}
+            placeholderTextColor={colors.greyLight}
+            autoFocus={true}
+            keyboardType="email-address"
+            // fontStyle={colors.white}
+            placeholder={"Enter your email"}
+          />
+        </View>
+
+        <View
+          style={styles.container_input}>
+          <Ionicons
+            name="ios-lock-closed-outline"
+            size={20}
+            color="#666"
+            style={{ marginRight: 5 }}
+          />
+          <TextInput
+            style={styles.input}
+            onChangeText={text => setUserPwd(text)}
+            fontStyle={colors.white}
+            secureTextEntry={true}
+            placeholderTextColor={colors.greyLight}
+            autoFocus={true}
+            keyboardType="password"
+            placeholder={"Enter your password"}
+          />
+        </View>
+
+        <CustomButton label={"Login"} onPress={() => {
+          if (userEmail.length === 0 || userPwd.length === 0) {
+            func.showCheck('Null value', 'need input value when register')
+          } else {
+            LoginUser();
+          }
+        }} />
 
         <Text style={{ textAlign: 'center', color: '#666', marginBottom: 30 }}>
           Or, login with ...
@@ -88,7 +181,7 @@ const LoginScreen = ({ navigation}) => {
             marginBottom: 30,
           }}>
           <TouchableOpacity
-            onPress={() => {}}
+            onPress={() => { }}
             style={{
               borderColor: '#ddd',
               borderWidth: 2,
@@ -99,7 +192,7 @@ const LoginScreen = ({ navigation}) => {
             <GoogleSVG height={24} width={24} />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => {}}
+            onPress={() => { }}
             style={{
               borderColor: '#ddd',
               borderWidth: 2,
@@ -110,7 +203,7 @@ const LoginScreen = ({ navigation}) => {
             <FacebookSVG height={24} width={24} />
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => {}}
+            onPress={() => { }}
             style={{
               borderColor: '#ddd',
               borderWidth: 2,
@@ -129,7 +222,7 @@ const LoginScreen = ({ navigation}) => {
             justifyContent: 'center',
             marginBottom: 30,
           }}>
-          <Text style={{color: colors.white}}>New to the app?</Text>
+          <Text style={{ color: colors.white }}>New to the app?</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Register')}>
             <Text style={{ color: '#AD40AF', fontWeight: '700' }}> Register</Text>
           </TouchableOpacity>
@@ -146,5 +239,20 @@ LoginScreen.propTypes = {
 };
 
 
+const styles = StyleSheet.create({
+  container_input: {
+    flexDirection: 'row',
+    borderBottomColor: colors.greyLight,
+    borderBottomWidth: 1,
+    paddingBottom: 8,
+    marginBottom: 25
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 0,
+    color: colors.white
+  }
+});
 
-export default LoginScreen;
+
+export default React.memo(LoginScreen);

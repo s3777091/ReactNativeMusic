@@ -1,11 +1,13 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
   View,
   Text,
+  Alert,
   TextInput,
   TouchableOpacity,
+  StyleSheet
 } from 'react-native';
 
 import PropTypes from 'prop-types';
@@ -16,19 +18,84 @@ import RegistrationSVG from '../assets/images/registration.svg'
 
 import CustomButton from '../components/Design/CustomButton';
 import InputField from '../components/Design/InputField';
-import { colors } from '../constants';
+import { colors, func } from '../constants';
 
-const RegisterScreen = ({navigation}) => {
+
+import con from '../../data';
+
+const USERNAME_REGEX = /^[A-z][A-z0-9-_]{1,23}$/;
+const USEREMAIL_REGEX = /^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
+const REGISTER_URL = con.Domain.concat(con.Register);
+
+const RegisterScreen = ({ navigation }) => {
+
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+  const [userPwd, setUserPwd] = useState("");
+
+
+  const RegisterUser = async () => {
+    try {
+      const payload = JSON.stringify({
+        name: userName,
+        email: userEmail,
+        pwd: userPwd
+      });
+
+      const responseRegister = await fetch(REGISTER_URL, {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: payload,
+      })
+
+      if (responseRegister.status === 401) {
+        showAlert('Already have user', 'User already existing in database pls create new one !!')
+      }
+
+      if (responseRegister.status >= 200 && responseRegister.status <= 299) {
+        showAlert('Success Create user', 'Thanks for create account');
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+
+  };
+
+  const showAlert = (title, des) =>
+    Alert.alert(
+      `${title}`,
+      `${des}`,
+      [
+        {
+          text: 'Go Back',
+          onPress: () => navigation.goBack(null),
+          style: 'cancel'
+        }
+      ],
+      {
+        cancelable: true,
+        onDismiss: () =>
+          Alert.alert(
+            'This alert was dismissed by tapping outside of the alert dialog.'
+          )
+      }
+    );
+
   return (
-    <SafeAreaView style={{flex: 1, justifyContent: 'center'}}>
+    <SafeAreaView style={{ flex: 1, justifyContent: 'center' }}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        style={{paddingHorizontal: 25}}>
-        <View style={{alignItems: 'center'}}>
+        style={{ paddingHorizontal: 25 }}>
+        <View style={{ alignItems: 'center' }}>
           <RegistrationSVG
             height={300}
             width={300}
-            style={{transform: [{rotate: '-5deg'}]}}
+            style={{ transform: [{ rotate: '-5deg' }] }}
           />
         </View>
 
@@ -42,58 +109,74 @@ const RegisterScreen = ({navigation}) => {
           Register
         </Text>
 
-        <InputField
-          label={'Full Name'}
-          icon={
-            <Ionicons
-              name="person-outline"
-              size={20}
-              color="#666"
-              style={{marginRight: 5}}
-            />
-          }
-        />
 
-        <InputField
-          label={'Email User'}
-          icon={
-            <MaterialIcons
-              name="alternate-email"
-              size={20}
-              color="#666"
-              style={{marginRight: 5}}
-            />
-          }
-          keyboardType="email-address"
-        />
+        <View
+          style={styles.container_input}>
+          <Ionicons
+            name="person-outline"
+            size={20}
+            color="#666"
+            style={{ marginRight: 5 }}
+          />
+          <TextInput
+            style={styles.input}
+            onChangeText={text => setUserName(text)}
+            fontStyle={colors.white}
+            placeholderTextColor={colors.greyLight}
+            autoFocus={true}
+            // fontStyle={colors.white}
+            placeholder={"Enter your name"}
+          />
+        </View>
 
-        <InputField
-          label={'Password'}
-          icon={
-            <Ionicons
-              name="ios-lock-closed-outline"
-              size={20}
-              color="#666"
-              style={{marginRight: 5}}
-            />
-          }
-          inputType="password"
-        />
+        <View
+          style={styles.container_input}>
+          <MaterialIcons
+            name="alternate-email"
+            size={20}
+            color="#666"
+            style={{ marginRight: 5 }}
+          />
+          <TextInput
+            style={styles.input}
+            onChangeText={text => setUserEmail(text)}
+            fontStyle={colors.white}
+            placeholderTextColor={colors.greyLight}
+            autoFocus={true}
+            keyboardType="email-address"
+            // fontStyle={colors.white}
+            placeholder={"Enter your email"}
+          />
+        </View>
 
-        <InputField
-          label={'Confirm Password'}
-          icon={
-            <Ionicons
-              name="ios-lock-closed-outline"
-              size={20}
-              color="#666"
-              style={{marginRight: 5}}
-            />
-          }
-          inputType="password"
-        />
+        <View
+          style={styles.container_input}>
+          <Ionicons
+            name="ios-lock-closed-outline"
+            size={20}
+            color="#666"
+            style={{ marginRight: 5 }}
+          />
+          <TextInput
+            style={styles.input}
+            onChangeText={text => setUserPwd(text)}
+            fontStyle={colors.white}
+            secureTextEntry={true}
+            placeholderTextColor={colors.greyLight}
+            autoFocus={true}
+            keyboardType="password"
+            placeholder={"Enter your password"}
+          />
+        </View>
 
-        <CustomButton label={'Register'} onPress={() => {}} />
+        <CustomButton label={'Register'} onPress={() => {
+
+          if (userName.length === 0 || userEmail.length === 0 || userPwd.length === 0) {
+            func.showCheck('Null value', 'need input value when register')
+          } else {
+            RegisterUser();
+          }
+        }} />
 
         <View
           style={{
@@ -101,9 +184,9 @@ const RegisterScreen = ({navigation}) => {
             justifyContent: 'center',
             marginBottom: 30,
           }}>
-          <Text style={{color: colors.white}}>Already registered?</Text>
+          <Text style={{ color: colors.white }}>Already registered?</Text>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Text style={{color: '#AD40AF', fontWeight: '700'}}> Login</Text>
+            <Text style={{ color: '#AD40AF', fontWeight: '700' }}> Login</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -117,5 +200,20 @@ RegisterScreen.propTypes = {
   navigation: PropTypes.object.isRequired
 };
 
+const styles = StyleSheet.create({
+  container_input: {
+    flexDirection: 'row',
+    borderBottomColor: colors.greyLight,
+    borderBottomWidth: 1,
+    paddingBottom: 8,
+    marginBottom: 25
+  },
+  input: {
+    flex: 1,
+    paddingVertical: 0,
+    color: colors.white
+  }
+});
 
-export default RegisterScreen;
+
+export default React.memo(RegisterScreen);

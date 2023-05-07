@@ -10,7 +10,10 @@ const LyrickLink = "/lyrick?id=";
 const ArtistLink = "/artist?alias=";
 const HubLink = "/hub";
 
-const HubDetal = '/hub/detail?id='
+const HubDetal = '/hub/detail?id=';
+
+const Login = '/users/login';
+const Register = '/users/register';
 
 
 const SearchLink = "/search?key=";
@@ -82,6 +85,8 @@ export default {
     SearchLink,
     LyrickLink,
     artistData,
+    Register,
+    Login,
     SuggestKey,
     lang
 }
