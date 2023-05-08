@@ -122,7 +122,7 @@ const Home = () => {
         console.warn(e);
       } finally {
         setLoadingUser(false);
-        console.log(userDetail);
+        // console.log(userDetail);
       }
     }
     prepare();

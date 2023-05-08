@@ -1,8 +1,7 @@
-const Domain = "http://192.168.0.104:3000";
-
+const Domain = "https://kishop.store";
+// const Domain = "http://192.168.0.104:3000";
 
 const Home = "/page?page=";
-const NewConcept = "/new?type=";
 const VideoLink = "/video?id=";
 const AlbumLink = "/album?id=";
 const StreamLink = "/mp3?id=";
@@ -75,7 +74,6 @@ const artistData = [
 export default {
     Domain,
     Home,
-    NewConcept,
     VideoLink,
     AlbumLink,
     StreamLink,

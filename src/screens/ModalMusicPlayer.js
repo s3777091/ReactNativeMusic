@@ -225,7 +225,6 @@ const ModalMusicPlayer = (props) => {
           <View style={styles.containerControls}>
             <TouchIcon
               icon={<Feather color={colors.greyLight} name="shuffle" />}
-              onPress={() => null}
             />
             <View style={gStyle.flexRowCenterAlign}>
               {Loading ? (

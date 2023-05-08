@@ -158,23 +158,21 @@ const Album = ({ navigation, route }) => {
             <Text style={styles.headerTitle}>{DataHeader.title}</Text>
           </Animated.View>
 
-          <TouchIcon
-            icon={<Feather color={colors.white} name="more-horizontal" />}
-          />
+
         </View>
       </View>
 
-      
+
 
       <View style={styles.containerFixed}>
-        
-      <View style={styles.containerLinear}>
+
+        <View style={styles.containerLinear}>
           <LinearGradient fill={colorOne} height={(Dimensions.get('window').height / 2) + 89} />
         </View>
         <View style={styles.containerImage}>
           <Image source={{ uri: DataHeader.image }} style={styles.image} />
         </View>
-        
+
         <View style={styles.containerAlbum}>
           <Text style={styles.albumInfo}>
             {`Album by ${DataHeader.artist}`}
@@ -183,7 +181,9 @@ const Album = ({ navigation, route }) => {
 
         <View style={styles.containerDetail}>
           <TouchIcon style={styles.iconDetail}
-            icon={<Feather name="download" color={colors.white} />}
+            icon={<Feather name="download" color={colors.white}
+            onPress={() => null}
+            />}
           />
           <Button
             style={{ borderRadius: 50 }}
@@ -192,7 +192,7 @@ const Album = ({ navigation, route }) => {
           />
 
           <TouchIcon style={styles.iconDetail}
-            icon={<AntDesign color={colors.white} name="hearto" />}
+            icon={<AntDesign color={colors.white} name="hearto" onPress={() => null} />}
           />
         </View>
 
