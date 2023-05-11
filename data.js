@@ -14,6 +14,8 @@ const HubDetal = '/hub/detail?id=';
 const Login = '/users/login';
 const Register = '/users/register';
 
+const albumlike = '/albumlike?id=';
+const songlike = '/songlike?id=';
 
 const SearchLink = "/search?key=";
 const lang = "&language=vi";
@@ -86,5 +88,7 @@ export default {
     Register,
     Login,
     SuggestKey,
-    lang
+    lang,
+    songlike,
+    albumlike
 }
