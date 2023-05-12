@@ -1,5 +1,5 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
+import PropTypes, { func } from 'prop-types';
 import {
   Animated,
   Image,
@@ -9,9 +9,10 @@ import {
   ActivityIndicator,
   BlurView,
   Button,
+  Alert,
   Dimensions
 } from 'react-native';
-import { Feather, AntDesign } from '@expo/vector-icons';
+import { Feather, AntDesign, FontAwesome } from '@expo/vector-icons';
 import { colors, device, gStyle } from '../constants';
 // components
 import LinearGradient from '../components/Design/LinearGradient';
@@ -22,6 +23,8 @@ import ArtistDisplay from '../components/Display/ArtistDisplay';
 
 import TouchIcon from '../components/Design/TouchIcon';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 import con from '../../data';
 // context
@@ -29,6 +32,8 @@ import Context from '../context';
 
 const LinkAblum = con.Domain.concat(con.AlbumLink);
 const linkMUSIC = con.Domain.concat(con.StreamLink);
+
+const LinkAlbumLike = con.Domain.concat(con.AlbumLike);
 
 const Album = ({ navigation, route }) => {
   const data_pass = route.params;
@@ -48,6 +53,7 @@ const Album = ({ navigation, route }) => {
       await response.json().then((ra) => {
         setDetail(ra);
         setListMusic(ra.song);
+        
       });
 
     } catch (error) {
@@ -81,7 +87,6 @@ const Album = ({ navigation, route }) => {
     try {
       const responseSong = await fetch(linkMUSIC.concat(id));
       const jsonSong = await responseSong.json();
-
       if (isMouted) {
         return jsonSong.mp3_128 || jsonSong.mp3_320 || jsonSong.mp3_lossless;
       }
@@ -92,24 +97,84 @@ const Album = ({ navigation, route }) => {
   };
 
 
+  const LikeAlbum = async () => {
+    try {
+      const s = await AsyncStorage.getItem('userDetail');
+      if (s !== null) {
+        const data = JSON.parse(s);
+        const payload = JSON.stringify({
+          encodeid: data_pass.id,
+          image: data_pass.image,
+          name: data_pass.title,
+          artist: data_pass.artist,
+          user_idx: data.id,
+        });
+        const resLike = await fetch(LinkAlbumLike, {
+          method: "POST",
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: payload,
+        })
+
+        if (resLike.status >= 200 && resLike.status <= 299) {
+          showCheck('Success like Album', `Adding album to profile`);
+        } else {
+          showCheck('Already like this Album', `You maybe like this album before`);
+        }
+
+
+      } else {
+        showCheck('Current user is empty', `You need login to like album`);
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const showCheck = (title, des) =>
+  Alert.alert(
+    `${title}`,
+    `${des}`,
+    [
+      {
+        text: 'close',
+        style: 'cancel'
+      }
+    ],
+    {
+      cancelable: true,
+      onDismiss: () =>
+        Alert.alert(
+          'This alert was dismissed by tapping outside of the alert dialog.'
+        )
+    }
+  );
+
+
   const onChangeSong = async (songData) => {
-    // update local state
     setSong(songData.title);
 
-    const songObject = {
-      music_id: songData.music_id,
-      album: songData.album,
-      artistsNames: songData.artistsNames,
-      image: songData.image,
-      length: songData.length,
-      title: songData.title,
-      songUrl: await fetchSoundLink(songData.music_id),
-    }
+    
+    await fetchSoundLink(songData.music_id)
+      .then((e) => {
+        const songObject = {
+          music_id: songData.music_id,
+          album: songData.album,
+          artistsNames: songData.artistsNames,
+          image: songData.image,
+          length: songData.length,
+          title: songData.title,
+          songUrl: e
+        };
 
-    updateState('showMusicBar', !showMusicBar);
-    updateState('currentSongData', songObject);
-
-    navigation.navigate('ModalMusicPlayer');
+        updateState('showMusicBar', !showMusicBar);
+        updateState('currentSongData', songObject);
+        navigation.navigate('ModalMusicPlayer');
+      })
+      
   };
 
   // ui state
@@ -180,22 +245,8 @@ const Album = ({ navigation, route }) => {
         </View>
 
         <View style={styles.containerDetail}>
-          <TouchIcon style={styles.iconDetail}
-            icon={<Feather name="download" color={colors.white}
-            onPress={() => null}
-            />}
-          />
-          <Button
-            style={{ borderRadius: 50 }}
-            title="phát ngẫu nhiên"
-            color="#be32fe"
-          />
-
-          <TouchIcon style={styles.iconDetail}
-            icon={<AntDesign color={colors.white} name="hearto" onPress={() => null} />}
-          />
+        <Text style={styles.headerTitle}>{DataHeader.title}</Text>
         </View>
-
       </View>
 
       {isLoading ? (
@@ -218,9 +269,11 @@ const Album = ({ navigation, route }) => {
                 { opacity: opacityShuffle }
               ]}>
               <Button
-                title="phát ngẫu nhiên"
+                title="Thích Album này"
                 color="#be32fe"
+                onPress={() => LikeAlbum(DataHeader)}
               />
+
             </Animated.View>
           </View>
 
@@ -321,7 +374,7 @@ const styles = StyleSheet.create({
   },
   containerFixed: {
     alignItems: 'center',
-    paddingTop: device.iPhoneNotch ? 114 : 70,
+    paddingTop: device.iPhoneNotch ? 114 : 100,
     position: 'absolute',
     width: '100%'
   },

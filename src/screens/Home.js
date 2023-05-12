@@ -40,10 +40,8 @@ const Home = () => {
 
   const [Greeting, SetGreeting] = React.useState();
 
-
-
   const [isUser, setLoadingUser] = React.useState(true);
-  const [userDetail, SetUser] = React.useState(null);
+  const [userDetail, SetUser] = React.useState();
 
   //Checking load
   const [isLoading, setLoading] = React.useState(true);
@@ -108,29 +106,28 @@ const Home = () => {
     loadData();
   }, []);
 
+
   React.useEffect(() => {
-    async function prepare() {
-      try {
-        const userDetail = await AsyncStorage.getItem('userDetail');
-        if (userDetail !== null) {
-          const data = JSON.parse(userDetail);
-          SetUser(data);
-        } else {
-          setLoadingUser(true);
+    const unsubscribe = navigation.addListener('focus', () => {
+      async function prepare() {
+        try {
+          const s = await AsyncStorage.getItem('userDetail');
+          if (s !== null) {
+            const data = JSON.parse(s);
+            SetUser(data);
+            setLoadingUser(false);
+          } else {
+            setLoadingUser(true);
+          }
+        } catch (e) {
+          console.warn(e);
         }
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        setLoadingUser(false);
-        // console.log(userDetail);
       }
-    }
-    prepare();
+      prepare();
 
-
-
-  }, []);
-
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   const scrollY = React.useRef(new Animated.Value(0)).current;
 
@@ -198,16 +195,27 @@ const Home = () => {
             {Greeting}
           </Text>
 
-
           {isUser ? (
             <TouchIcon
               onPress={() => navigation.navigate("Login")}
               icon={<Feather color={colors.white} name="user" />}
             />
           ) : (
-            <View style={styles.avatar_container}>
-              <Image source={{ uri: userDetail.Avatar }} style={styles.avatar_styles} />
-            </View>
+            <>
+              <TouchableOpacity
+                activeOpacity={gStyle.activeOpacity}
+                hitSlop={{ top: 10, left: 10, bottom: 10, right: 10 }}
+                onPress={() => navigation.navigate("UserScreen", {
+                  id: userDetail.id,
+                  name: userDetail.name,
+                  email: userDetail.Email,
+                  image: userDetail.Avatar
+                })}
+                style={styles.avatar_container}
+              >
+                <Image source={{ uri: isUser ? userDetail.Avatar : "https://i.ibb.co/TRYkPj7/OIP.jpg" }} style={styles.avatar_styles} />
+              </TouchableOpacity>
+            </>
           )}
 
         </View>
@@ -304,4 +312,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default React.memo(Home);
+export default Home;

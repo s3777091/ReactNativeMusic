@@ -18,19 +18,9 @@ const App = () => {
       try {
         await SplashScreen.preventAutoHideAsync();
         await func.loadAssetsAsync();
-        const userDetail = await AsyncStorage.getItem('userDetail');
-        if (userDetail !== null) {
-          const data = JSON.parse(userDetail);
-          
-          const detail = {
-            Avatar: data.Avatar, 
-            Email: data.Email, 
-            isActive: data.isActive, 
-            isLogin: data.isLogin, 
-            name: data.name
-          }
-          updateState('userDetail', detail);
-        }
+
+        // AsyncStorage.clear();
+
       } catch (e) {
         // console.warn(e);
       } finally {

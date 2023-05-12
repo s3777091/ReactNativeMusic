@@ -14,6 +14,8 @@ import HubScreen from '../screens/Hub';
 import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 
+import UserScreen from '../screens/UserScreen';
+
 const Stack = createNativeStackNavigator();
 
 export default () => (
@@ -74,6 +76,17 @@ export default () => (
           presentation: 'fullScreenModal',
           animation: 'slide_from_bottom'
         }}
+      />
+
+      <Stack.Screen
+        name="UserScreen"
+        component={UserScreen}
+        options={{
+          headerShown: false,
+          presentation: 'fullScreenModal',
+          animation: 'slide_from_bottom'
+        }}
+
       />
 
     </Stack.Navigator>

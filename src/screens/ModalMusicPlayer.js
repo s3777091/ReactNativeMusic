@@ -8,7 +8,8 @@ import {
   View,
   ActivityIndicator,
   Animated,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert
 } from 'react-native';
 
 import { Feather, FontAwesome, MaterialIcons } from '@expo/vector-icons';
@@ -21,7 +22,15 @@ import ModalHeader from '../components/Design/ModalHeader';
 import TouchIcon from '../components/Design/TouchIcon';
 import AutoScroll from "@homielab/react-native-auto-scroll";
 
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
 import Context from '../context';
+
+import con from '../../data';
+
+const LinkSongLike = con.Domain.concat(con.SongLike);
 
 const ModalMusicPlayer = (props) => {
   // get main app state
@@ -154,6 +163,68 @@ const ModalMusicPlayer = (props) => {
     extrapolate: 'clamp'
   });
 
+
+  const LikeSong = async () => {
+    try {
+      const s = await AsyncStorage.getItem('userDetail');
+      if (s !== null) {
+        const data = JSON.parse(s);
+        const payload = JSON.stringify({
+          encodeid: currentSongData.music_id,
+          image: currentSongData.image,
+          songurl: currentSongData.songUrl,
+          name: currentSongData.title,
+          artist: currentSongData.artistsNames,
+          user_idx: data.id,
+        });
+
+        console.log(payload);
+
+        const resLike = await fetch(LinkSongLike, {
+          method: "POST",
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: payload,
+        })
+
+        if (resLike.status >= 200 && resLike.status <= 299) {
+          showCheck('Success like Song', `Adding song to profile`);
+          setFavorited(!favorited)
+        } else {
+          showCheck('Already like this song', `You maybe like this song before`);
+        }
+
+
+      } else {
+        showCheck('Current user is empty', `You need login to like LinkSongLike`);
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const showCheck = (title, des) =>
+  Alert.alert(
+    `${title}`,
+    `${des}`,
+    [
+      {
+        text: 'close',
+        style: 'cancel'
+      }
+    ],
+    {
+      cancelable: true,
+      onDismiss: () =>
+        Alert.alert(
+          'This alert was dismissed by tapping outside of the alert dialog.'
+        )
+    }
+  );
+
   return (
     <React.Fragment>
       {device.iPhoneNotch && (
@@ -197,7 +268,7 @@ const ModalMusicPlayer = (props) => {
             <View style={styles.containerFavorite}>
               <TouchIcon
                 icon={<FontAwesome color={favoriteColor} name={favoriteIcon} />}
-                onPress={() => setFavorited(!favorited)}
+                onPress={() => LikeSong()}
               />
             </View>
           </View>

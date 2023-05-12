@@ -1,5 +1,5 @@
-const Domain = "https://kishop.store";
-// const Domain = "http://192.168.0.104:3000";
+// const Domain = "https://kishop.store";
+const Domain = "http://192.168.50.127:3000";
 
 const Home = "/page?page=";
 const VideoLink = "/video?id=";
@@ -14,7 +14,13 @@ const HubDetal = '/hub/detail?id=';
 const Login = '/users/login';
 const Register = '/users/register';
 
+const allLike = '/users/like?id=';
 
+
+const AlbumLike = '/users/albumlike';
+const SongLike = '/users/songlike';
+
+const userProfile = '/users/count?id='
 const SearchLink = "/search?key=";
 const lang = "&language=vi";
 const SuggestKey = `https://ac.zingmp3.vn/v1/web/suggestion-keywords?num=10&query=`
@@ -83,8 +89,12 @@ export default {
     SearchLink,
     LyrickLink,
     artistData,
+    AlbumLike,
     Register,
+    allLike,
     Login,
+    userProfile,
+    SongLike,
     SuggestKey,
     lang
 }
