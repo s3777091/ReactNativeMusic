@@ -184,7 +184,7 @@ const RegisterScreen = ({ navigation }) => {
               func.showCheck('No password', 'Please enter the password');
             } else if (!PWD_REGEX.test(userPwd)) {
               func.showCheck(
-                'Invalid user email',
+                'Invalid password',
                 'Password must be at least 8 letters and have !, @, #, $, %'
               );
             } else {
