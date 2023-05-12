@@ -106,6 +106,7 @@ const LoginScreen = ({ navigation }) => {
           <LoginSVG
             height={300}
             width={300}
+            viewBox = "0 0 800 500"
             style={{ transform: [{ rotate: '-5deg' }] }}
           />
 
@@ -224,7 +225,7 @@ const LoginScreen = ({ navigation }) => {
           }}>
           <Text style={{ color: colors.white }}>New to the app?</Text>
           <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-            <Text style={{ color: '#AD40AF', fontWeight: '700' }}> Register</Text>
+            <Text style={{ color: colors.brandPrimary, fontWeight: '700' }}> Register</Text>
           </TouchableOpacity>
         </View>
       </View>

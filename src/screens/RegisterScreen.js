@@ -14,12 +14,10 @@ import PropTypes from 'prop-types';
 
 import { MaterialIcons, Ionicons } from '@expo/vector-icons';
 
-import RegistrationSVG from '../assets/images/registration.svg'
+import RegistrationSVG from '../assets/images/registration.svg';
 
 import CustomButton from '../components/Design/CustomButton';
-import InputField from '../components/Design/InputField';
 import { colors, func } from '../constants';
-
 
 import con from '../../data';
 
@@ -29,11 +27,9 @@ const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 const REGISTER_URL = con.Domain.concat(con.Register);
 
 const RegisterScreen = ({ navigation }) => {
-
-  const [userName, setUserName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
-  const [userPwd, setUserPwd] = useState("");
-
+  const [userName, setUserName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
+  const [userPwd, setUserPwd] = useState('');
 
   const RegisterUser = async () => {
     try {
@@ -44,26 +40,27 @@ const RegisterScreen = ({ navigation }) => {
       });
 
       const responseRegister = await fetch(REGISTER_URL, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: payload,
-      })
+        body: payload
+      });
 
       if (responseRegister.status === 401) {
-        showAlert('Already have user', 'User already existing in database pls create new one !!')
+        showAlert(
+          'Already have user',
+          'User already existing in database pls create new one !!'
+        );
       }
 
       if (responseRegister.status >= 200 && responseRegister.status <= 299) {
         showAlert('Success Create user', 'Thanks for create account');
       }
-
     } catch (error) {
       console.error(error);
     }
-
   };
 
   const showAlert = (title, des) =>
@@ -90,11 +87,13 @@ const RegisterScreen = ({ navigation }) => {
     <SafeAreaView style={{ flex: 1, justifyContent: 'center' }}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        style={{ paddingHorizontal: 25 }}>
+        style={{ paddingHorizontal: 25 }}
+      >
         <View style={{ alignItems: 'center' }}>
           <RegistrationSVG
             height={300}
             width={300}
+            viewBox="0 0 800 500"
             style={{ transform: [{ rotate: '-5deg' }] }}
           />
         </View>
@@ -104,14 +103,13 @@ const RegisterScreen = ({ navigation }) => {
             fontSize: 28,
             fontWeight: '500',
             color: colors.brandPrimary,
-            marginBottom: 30,
-          }}>
+            marginBottom: 30
+          }}
+        >
           Register
         </Text>
 
-
-        <View
-          style={styles.container_input}>
+        <View style={styles.container_input}>
           <Ionicons
             name="person-outline"
             size={20}
@@ -120,17 +118,15 @@ const RegisterScreen = ({ navigation }) => {
           />
           <TextInput
             style={styles.input}
-            onChangeText={text => setUserName(text)}
+            onChangeText={(text) => setUserName(text)}
             fontStyle={colors.white}
             placeholderTextColor={colors.greyLight}
             autoFocus={true}
-            // fontStyle={colors.white}
-            placeholder={"Enter your name"}
+            placeholder={'Enter your name'}
           />
         </View>
 
-        <View
-          style={styles.container_input}>
+        <View style={styles.container_input}>
           <MaterialIcons
             name="alternate-email"
             size={20}
@@ -139,18 +135,16 @@ const RegisterScreen = ({ navigation }) => {
           />
           <TextInput
             style={styles.input}
-            onChangeText={text => setUserEmail(text)}
+            onChangeText={(text) => setUserEmail(text)}
             fontStyle={colors.white}
             placeholderTextColor={colors.greyLight}
             autoFocus={true}
             keyboardType="email-address"
-            // fontStyle={colors.white}
-            placeholder={"Enter your email"}
+            placeholder={'Enter your email'}
           />
         </View>
 
-        <View
-          style={styles.container_input}>
+        <View style={styles.container_input}>
           <Ionicons
             name="ios-lock-closed-outline"
             size={20}
@@ -159,41 +153,65 @@ const RegisterScreen = ({ navigation }) => {
           />
           <TextInput
             style={styles.input}
-            onChangeText={text => setUserPwd(text)}
+            onChangeText={(text) => setUserPwd(text)}
             fontStyle={colors.white}
             secureTextEntry={true}
             placeholderTextColor={colors.greyLight}
             autoFocus={true}
             keyboardType="password"
-            placeholder={"Enter your password"}
+            placeholder={'Enter your password'}
           />
         </View>
 
-        <CustomButton label={'Register'} onPress={() => {
-
-          if (userName.length === 0 || userEmail.length === 0 || userPwd.length === 0) {
-            func.showCheck('Null value', 'need input value when register')
-          } else {
-            RegisterUser();
-          }
-        }} />
+        <CustomButton
+          label={'Register'}
+          onPress={() => {
+            if (!userName) {
+              func.showCheck('No user name', 'Please enter the user name');
+            } else if (!USERNAME_REGEX.test(userName)) {
+              func.showCheck(
+                'Invalid user name',
+                'User name must be at least 2 bytes'
+              );
+            } else if (!userEmail) {
+              func.showCheck('No user email', 'Please enter the user email');
+            } else if (!USEREMAIL_REGEX.test(userEmail)) {
+              func.showCheck(
+                'Invalid user email',
+                'Please check the email format'
+              );
+            } else if (!userPwd) {
+              func.showCheck('No password', 'Please enter the password');
+            } else if (!PWD_REGEX.test(userPwd)) {
+              func.showCheck(
+                'Invalid user email',
+                'Password must be at least 8 letters and have !, @, #, $, %'
+              );
+            } else {
+              RegisterUser();
+            }
+          }}
+        />
 
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'center',
-            marginBottom: 30,
-          }}>
+            marginBottom: 30
+          }}
+        >
           <Text style={{ color: colors.white }}>Already registered?</Text>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Text style={{ color: '#AD40AF', fontWeight: '700' }}> Login</Text>
+            <Text style={{ color: colors.brandPrimary, fontWeight: '700' }}>
+              {' '}
+              Login
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 };
-
 
 RegisterScreen.propTypes = {
   // required
@@ -214,6 +232,5 @@ const styles = StyleSheet.create({
     color: colors.white
   }
 });
-
 
 export default React.memo(RegisterScreen);
