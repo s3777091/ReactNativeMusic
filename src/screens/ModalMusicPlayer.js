@@ -74,7 +74,7 @@ const ModalMusicPlayer = (props) => {
         url: url,
         headers: {
           Accept: "application/json",
-          cookie: `${response.headers['set-cookie'] && response.headers['set-cookie'][0]};zpsid=eMqpTcwdFagwSovP8Ar25B0dHKSbgaCNiJvFGJsoDqRRV4TL2_uhJyGjPtaMn1zHx19CKNZZ1q2PAGWL0zfF1-WvDXO6x6eMy6CUDnQFRo3xVmaSA_rb1W;zmp3_sid=YV6SGkH8OtwNz9j3vqbwT97iWpUs8pXyXThFAxyyQLofn_KVeHHMTu6fqWUmOMqpnTBhJ_SGVGt6rzrgvWWd9UV7lc_G0piopFhCPVPIUGt5wkbxQMG`
+          cookie: `${response.headers['set-cookie'] && response.headers['set-cookie'][0]}`
         }
       });
       
