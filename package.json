@@ -1,17 +1,17 @@
 {
-  "name": "expo-spotify",
+  "name": "cloud-music",
   "version": "0.5.0",
-  "description": "Spotify UI Clone with Expo",
+  "description": "Music cloud with Expo",
   "author": "Dat Huynh",
   "license": "RMIT",
   "keywords": [
     "expo",
     "react native",
     "react navigation",
-    "spotify"
+    "cloud-music"
   ],
   "scripts": {
-    "start": "expo start",
+    "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
@@ -27,11 +27,14 @@
     "@react-navigation/native": "^6.0.10",
     "@react-navigation/native-stack": "^6.6.2",
     "@shopify/flash-list": "1.1.0",
-    "expo": "^46.0.21",
+    "axios": "^1.4.0",
+    "crypto-js": "^4.1.1",
+    "expo": "~46.0.21",
     "expo-asset": "~8.6.3",
     "expo-av": "~12.0.4",
     "expo-blur": "~11.2.0",
     "expo-font": "~10.2.0",
+    "expo-modules-autolinking": "^1.2.0",
     "expo-splash-screen": "~0.16.2",
     "expo-status-bar": "~1.4.4",
     "expo-updates": "~0.14.7",
@@ -45,6 +48,7 @@
     "react-native-screens": "~3.15.0",
     "react-native-svg": "12.3.0",
     "react-native-svg-transformer": "^1.0.0",
+    "react-native-web": "~0.18.7",
     "yarn": "^1.22.18"
   },
   "devDependencies": {

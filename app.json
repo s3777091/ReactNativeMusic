@@ -26,7 +26,11 @@
     ],
     "android": {
       "versionCode": 50,
-      "package": "com.dathuynh.kimusic"
+      "package": "com.dathuynh.kimusic",
+      "adaptiveIcon": {
+        "foregroundImage": "src/assets/icon.png",
+        "backgroundColor": "#181414"
+      }
     },
     "ios": {
       "buildNumber": "0.5.0",

@@ -20,7 +20,9 @@ import AlbumDisplay from '../components/Display/AlbumDisplay';
 import con from '../../data';
 
 const link = con.Domain.concat(con.SearchLink);
-const linkMUSIC = con.Domain.concat(con.StreamLink);
+
+import {getHash256, getHmac512} from '../../config/encrypt';
+
 
 
 const SearchResults = ({ navigation, route }) => {
@@ -34,21 +36,13 @@ const SearchResults = ({ navigation, route }) => {
   const [notFound, SetNotFoud] = React.useState(false);
   const textValue = route.params.textSearchValue;
 
-  const fetchSoundLink = async (id) => {
-    const isMouted = true;
-    //False Is song // True is PodCast
-    try {
-      const responseSong = await fetch(linkMUSIC.concat(id));
-      const jsonSong = await responseSong.json();
-
-      if (isMouted) {
-        return jsonSong.mp3_128 || jsonSong.mp3_320 || jsonSong.mp3_lossless;
-      }
-    } catch (error) {
-      showAlert();
-    }
-
-  };
+  function getStream(id) {
+    var milliseconds = new Date().getTime().toString();
+    var code = milliseconds.substring(0, 10);
+    var Hash = `ctime=${code}id=${id}version=1.9.24`;
+    var sign = getHmac512("/api/v2/song/get/streaming" + getHash256(Hash), "acOrvUS15XRW2o9JksiK1KgQ6Vbds8ZW");
+    return "https://zingmp3.vn/api/v2/song/get/streaming" + `?id=${id}&ctime=${code}&version=1.9.24&sig=${sign}&apiKey=X5BM3w8N7MKozC0B85o4KMlzLZKhV00y`;
+}
 
   const onChangeSong = async (songData) => {
     setSong(songData.title);
@@ -60,7 +54,7 @@ const SearchResults = ({ navigation, route }) => {
       image: songData.image,
       length: songData.length,
       title: songData.title,
-      songUrl: await fetchSoundLink(songData.music_id),
+      songUrl: getStream(songData.music_id),
     }
 
     updateState('currentSongData', songObject);

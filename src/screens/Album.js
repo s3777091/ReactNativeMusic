@@ -25,15 +25,17 @@ import TouchIcon from '../components/Design/TouchIcon';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 import con from '../../data';
 // context
 import Context from '../context';
 
 const LinkAblum = con.Domain.concat(con.AlbumLink);
-const linkMUSIC = con.Domain.concat(con.StreamLink);
 
 const LinkAlbumLike = con.Domain.concat(con.AlbumLike);
+
+
+import {getHash256, getHmac512} from '../../config/encrypt';
+
 
 const Album = ({ navigation, route }) => {
   const data_pass = route.params;
@@ -44,11 +46,19 @@ const Album = ({ navigation, route }) => {
   const [listMusic, setListMusic] = React.useState();
   const [Detail, setDetail] = React.useState();
 
+  function getStream(id) {
+    var milliseconds = new Date().getTime().toString();
+    var code = milliseconds.substring(0, 10);
+    var Hash = `ctime=${code}id=${id}version=1.9.24`;
+    var sign = getHmac512("/api/v2/song/get/streaming" + getHash256(Hash), "acOrvUS15XRW2o9JksiK1KgQ6Vbds8ZW");
+    return "https://zingmp3.vn/api/v2/song/get/streaming" + `?id=${id}&ctime=${code}&version=1.9.24&sig=${sign}&apiKey=X5BM3w8N7MKozC0B85o4KMlzLZKhV00y`;
+}
 
   //Get Song
   const GetDataList = async () => {
     //False mean PlayList
     try {
+      
       const response = await fetch(LinkAblum.concat(data_pass.id));
       await response.json().then((ra) => {
         setDetail(ra);
@@ -74,27 +84,14 @@ const Album = ({ navigation, route }) => {
     GetDataList();
   }, []);
 
+  
+
   // get main app state
   const { currentSongData, showMusicBar, updateState } =
     React.useContext(Context);
 
   const [song, setSong] = React.useState(currentSongData.title);
   const scrollY = React.useRef(new Animated.Value(0)).current;
-
-  const fetchSoundLink = async (id) => {
-    const isMouted = true;
-    //False Is song // True is PodCast
-    try {
-      const responseSong = await fetch(linkMUSIC.concat(id));
-      const jsonSong = await responseSong.json();
-      if (isMouted) {
-        return jsonSong.mp3_128 || jsonSong.mp3_320 || jsonSong.mp3_lossless;
-      }
-    } catch (error) {
-      showAlert();
-    }
-
-  };
 
 
   const LikeAlbum = async () => {
@@ -157,9 +154,7 @@ const Album = ({ navigation, route }) => {
   const onChangeSong = async (songData) => {
     setSong(songData.title);
 
-    
-    await fetchSoundLink(songData.music_id)
-      .then((e) => {
+
         const songObject = {
           music_id: songData.music_id,
           album: songData.album,
@@ -167,13 +162,14 @@ const Album = ({ navigation, route }) => {
           image: songData.image,
           length: songData.length,
           title: songData.title,
-          songUrl: e
-        };
+          songUrl: getStream(songData.music_id)
+        }
+        
 
         updateState('showMusicBar', !showMusicBar);
         updateState('currentSongData', songObject);
         navigation.navigate('ModalMusicPlayer');
-      })
+      
       
   };
 

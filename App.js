@@ -18,9 +18,6 @@ const App = () => {
       try {
         await SplashScreen.preventAutoHideAsync();
         await func.loadAssetsAsync();
-
-        // AsyncStorage.clear();
-
       } catch (e) {
         // console.warn(e);
       } finally {

@@ -26,6 +26,10 @@ import AutoScroll from "@homielab/react-native-auto-scroll";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
+import axios from 'axios';
+
+
+
 import Context from '../context';
 
 import con from '../../data';
@@ -61,6 +65,46 @@ const ModalMusicPlayer = (props) => {
 
 
   const sound = React.useRef(new Audio.Sound());
+
+  async function getData(url) {
+    try {
+      const response = await axios.get(url);
+      const music = await axios({
+        method: 'get',
+        url: url,
+        headers: {
+          Accept: "application/json",
+          cookie: `${response.headers['set-cookie'] && response.headers['set-cookie'][0]};zpsid=p8dR.209077836.25.6FdDtNpr8RymirUpSFKXlmc6KurCp168IyqIYGrLobcT5JBDVOtOJX_r8Ry;zmp3_sid=YV6SGkH8OtwNz9j3vqbwT97iWpUs8pXyXThFAxyyQLofn_KVeHHMTu6fqWUmOMqpnTBhJ_SGVGt6rzrgvWWd9UV7lc_G0piopFhCPVPIUGt5wkbxQMG`
+        }
+      });
+      
+      if (music && music.data) {
+        return music.data.data["128"];
+      } 
+    }catch(error){
+        showAlert("Current Vip not support in online App", "try with local app");
+    }
+  }
+
+  const showAlert = (title, des) =>
+  Alert.alert(
+    `${title}`,
+    `${des}`,
+    [
+      {
+        text: 'Go Back',
+        onPress: () => navigation.goBack(null),
+        style: 'cancel'
+      }
+    ],
+    {
+      cancelable: true,
+      onDismiss: () =>
+        Alert.alert(
+          'This alert was dismissed by tapping outside of the alert dialog.'
+        )
+    }
+  );
 
   async function slider_change(value) {
     const seektime = value * duration
@@ -121,7 +165,7 @@ const ModalMusicPlayer = (props) => {
   const LoadSong = async () => {
     const checkLoading = await sound.current.getStatusAsync();
     if (checkLoading.isLoaded === false) {
-      const music = await sound.current.loadAsync({ uri: currentSongData.songUrl }, {
+      const music = await sound.current.loadAsync({ uri: await getData(currentSongData.songUrl) }, {
         shouldPlay: true,
         progressUpdateIntervalMillis: 1000,
       });

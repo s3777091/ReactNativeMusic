@@ -28,6 +28,10 @@ const LikeLink = con.Domain.concat(con.allLike);
 const userCheck = con.Domain.concat(con.userProfile);
 
 
+import {getHash256, getHmac512} from '../../config/encrypt';
+
+
+
 const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
 };
@@ -94,7 +98,16 @@ const UserScreen = ({ navigation, route }) => {
         getCheck();
     }, []);
 
+    function getStream(id) {
+        var milliseconds = new Date().getTime().toString();
+        var code = milliseconds.substring(0, 10);
+        var Hash = `ctime=${code}id=${id}version=1.9.24`;
+        var sign = getHmac512("/api/v2/song/get/streaming" + getHash256(Hash), "acOrvUS15XRW2o9JksiK1KgQ6Vbds8ZW");
+        return "https://zingmp3.vn/api/v2/song/get/streaming" + `?id=${id}&ctime=${code}&version=1.9.24&sig=${sign}&apiKey=X5BM3w8N7MKozC0B85o4KMlzLZKhV00y`;
+    }
+
     const onChangeSong = async (songData) => {
+        console.log(songData);
         if (songData.Link === 'Album') {
             navigation.navigate('Album', {
                 id: songData.encodeid,
@@ -110,9 +123,8 @@ const UserScreen = ({ navigation, route }) => {
                 image: songData.image,
                 length: songData.length,
                 title: songData.name,
-                songUrl: songData.Link
+                songUrl: getStream(songData.encodeid)
             }
-
             updateState('showMusicBar', !showMusicBar);
             updateState('currentSongData', songObject);
 
