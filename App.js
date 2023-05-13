@@ -6,7 +6,7 @@ import { func } from './src/constants';
 // root stack navigation
 import RootStack from './src/navigation/RootStack';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 // app context state
 import AppState from './src/context/AppState';
 
