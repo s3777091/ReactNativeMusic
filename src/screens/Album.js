@@ -30,11 +30,8 @@ import con from '../../data';
 import Context from '../context';
 
 const LinkAblum = con.Domain.concat(con.AlbumLink);
-
 const LinkAlbumLike = con.Domain.concat(con.AlbumLike);
-
-
-import {getHash256, getHmac512} from '../../config/encrypt';
+import { getHash256, getHmac512 } from '../../config/encrypt';
 
 
 const Album = ({ navigation, route }) => {
@@ -52,18 +49,18 @@ const Album = ({ navigation, route }) => {
     var Hash = `ctime=${code}id=${id}version=1.9.24`;
     var sign = getHmac512("/api/v2/song/get/streaming" + getHash256(Hash), "acOrvUS15XRW2o9JksiK1KgQ6Vbds8ZW");
     return "https://zingmp3.vn/api/v2/song/get/streaming" + `?id=${id}&ctime=${code}&version=1.9.24&sig=${sign}&apiKey=X5BM3w8N7MKozC0B85o4KMlzLZKhV00y`;
-}
+  }
 
   //Get Song
   const GetDataList = async () => {
     //False mean PlayList
     try {
-      
+
       const response = await fetch(LinkAblum.concat(data_pass.id));
       await response.json().then((ra) => {
         setDetail(ra);
         setListMusic(ra.song);
-        
+
       });
 
     } catch (error) {
@@ -83,8 +80,6 @@ const Album = ({ navigation, route }) => {
 
     GetDataList();
   }, []);
-
-  
 
   // get main app state
   const { currentSongData, showMusicBar, updateState } =
@@ -132,45 +127,43 @@ const Album = ({ navigation, route }) => {
   };
 
   const showCheck = (title, des) =>
-  Alert.alert(
-    `${title}`,
-    `${des}`,
-    [
+    Alert.alert(
+      `${title}`,
+      `${des}`,
+      [
+        {
+          text: 'close',
+          style: 'cancel'
+        }
+      ],
       {
-        text: 'close',
-        style: 'cancel'
+        cancelable: true,
+        onDismiss: () =>
+          Alert.alert(
+            'This alert was dismissed by tapping outside of the alert dialog.'
+          )
       }
-    ],
-    {
-      cancelable: true,
-      onDismiss: () =>
-        Alert.alert(
-          'This alert was dismissed by tapping outside of the alert dialog.'
-        )
-    }
-  );
+    );
 
 
   const onChangeSong = async (songData) => {
     setSong(songData.title);
+    const songObject = {
+      music_id: songData.music_id,
+      album: songData.album,
+      artistsNames: songData.artistsNames,
+      image: songData.image,
+      length: songData.length,
+      title: songData.title,
+      songUrl: getStream(songData.music_id)
+    }
 
 
-        const songObject = {
-          music_id: songData.music_id,
-          album: songData.album,
-          artistsNames: songData.artistsNames,
-          image: songData.image,
-          length: songData.length,
-          title: songData.title,
-          songUrl: getStream(songData.music_id)
-        }
-        
+    updateState('showMusicBar', !showMusicBar);
+    updateState('currentSongData', songObject);
+    navigation.navigate('ModalMusicPlayer');
 
-        updateState('showMusicBar', !showMusicBar);
-        updateState('currentSongData', songObject);
-        navigation.navigate('ModalMusicPlayer');
-      
-      
+
   };
 
   // ui state
@@ -223,8 +216,6 @@ const Album = ({ navigation, route }) => {
         </View>
       </View>
 
-
-
       <View style={styles.containerFixed}>
 
         <View style={styles.containerLinear}>
@@ -241,7 +232,7 @@ const Album = ({ navigation, route }) => {
         </View>
 
         <View style={styles.containerDetail}>
-        <Text style={styles.headerTitle}>{DataHeader.title}</Text>
+          <Text style={styles.headerTitle}>{DataHeader.title}</Text>
         </View>
       </View>
 

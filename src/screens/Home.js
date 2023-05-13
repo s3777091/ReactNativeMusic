@@ -312,4 +312,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default React.memo(Home);

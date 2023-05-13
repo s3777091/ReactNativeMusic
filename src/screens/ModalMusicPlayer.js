@@ -62,49 +62,48 @@ const ModalMusicPlayer = (props) => {
   const [position, setPosition] = React.useState(Number);
 
   const [audioProgess, setAudioProgess] = React.useState(Number);
-
-
   const sound = React.useRef(new Audio.Sound());
-
+  
   async function getData(url) {
     try {
-      const response = await axios.get(url);
-      const music = await axios({
-        method: 'get',
-        url: url,
+      const rs = await fetch("https://zingmp3.vn");
+      const s = rs.headers.get('set-cookie');
+      const music = await fetch(url, {
         headers: {
-          Accept: "application/json",
-          cookie: `${response.headers['set-cookie'] && response.headers['set-cookie'][0]}`
+          Accept: 'application/json',
+          cookie: s
         }
       });
-      
-      if (music && music.data) {
-        return music.data.data["128"];
-      } 
-    }catch(error){
-        showAlert("Current Vip not support in online App", "try with local app");
+      if (music.ok) {
+        const data = await music.json();
+        return data.data["128"];
+      } else {
+        showAlert("Pls reload", "Maybe sever overload pls reload");
+      }
+    } catch (error) {
+      showAlert("Current Vip not support in online App", "try with local app");
     }
   }
 
   const showAlert = (title, des) =>
-  Alert.alert(
-    `${title}`,
-    `${des}`,
-    [
+    Alert.alert(
+      `${title}`,
+      `${des}`,
+      [
+        {
+          text: 'Go Back',
+          onPress: () => navigation.goBack(null),
+          style: 'cancel'
+        }
+      ],
       {
-        text: 'Go Back',
-        onPress: () => navigation.goBack(null),
-        style: 'cancel'
+        cancelable: true,
+        onDismiss: () =>
+          Alert.alert(
+            'This alert was dismissed by tapping outside of the alert dialog.'
+          )
       }
-    ],
-    {
-      cancelable: true,
-      onDismiss: () =>
-        Alert.alert(
-          'This alert was dismissed by tapping outside of the alert dialog.'
-        )
-    }
-  );
+    );
 
   async function slider_change(value) {
     const seektime = value * duration
@@ -251,23 +250,23 @@ const ModalMusicPlayer = (props) => {
   };
 
   const showCheck = (title, des) =>
-  Alert.alert(
-    `${title}`,
-    `${des}`,
-    [
+    Alert.alert(
+      `${title}`,
+      `${des}`,
+      [
+        {
+          text: 'close',
+          style: 'cancel'
+        }
+      ],
       {
-        text: 'close',
-        style: 'cancel'
+        cancelable: true,
+        onDismiss: () =>
+          Alert.alert(
+            'This alert was dismissed by tapping outside of the alert dialog.'
+          )
       }
-    ],
-    {
-      cancelable: true,
-      onDismiss: () =>
-        Alert.alert(
-          'This alert was dismissed by tapping outside of the alert dialog.'
-        )
-    }
-  );
+    );
 
   return (
     <React.Fragment>

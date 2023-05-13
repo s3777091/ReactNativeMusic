@@ -1,4 +1,5 @@
 const Domain = "https://kishop.store";
+// const Domain = "http://192.168.0.149:3000"
 
 const Home = "/page?page=";
 const VideoLink = "/video?id=";

@@ -33,8 +33,7 @@ const linkMUSIC = con.Domain.concat(con.StreamLink);
 const imageHeight = Math.round((device.width * 9) / 16);
 
 
-import {getHash256, getHmac512} from '../../config/encrypt';
-
+import { getHash256, getHmac512 } from '../../config/encrypt';
 
 const Artist = ({ navigation, route }) => {
 
@@ -47,8 +46,6 @@ const Artist = ({ navigation, route }) => {
 
   const [Artist, setArtist] = React.useState();
   const [Section, setSection] = React.useState([]);
-
-
 
   const { currentSongData, updateState, showMusicBar } = React.useContext(Context);
 
@@ -106,7 +103,7 @@ const Artist = ({ navigation, route }) => {
     var Hash = `ctime=${code}id=${id}version=1.9.24`;
     var sign = getHmac512("/api/v2/song/get/streaming" + getHash256(Hash), "acOrvUS15XRW2o9JksiK1KgQ6Vbds8ZW");
     return "https://zingmp3.vn/api/v2/song/get/streaming" + `?id=${id}&ctime=${code}&version=1.9.24&sig=${sign}&apiKey=X5BM3w8N7MKozC0B85o4KMlzLZKhV00y`;
-}
+  }
 
 
 
@@ -157,7 +154,7 @@ const Artist = ({ navigation, route }) => {
                     image: s.thumbnailM,
                     length: s.duration,
                     title: s.title
-                  }}  
+                  }}
                 />
               </View>
             ))}

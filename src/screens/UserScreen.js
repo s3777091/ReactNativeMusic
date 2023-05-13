@@ -4,9 +4,7 @@ import {
     StyleSheet,
     Text,
     View,
-    SectionList,
     SafeAreaView,
-    FlatList,
     Animated,
     RefreshControl,
     ActivityIndicator,
@@ -20,7 +18,7 @@ import con from '../../data';
 import Context from '../context';
 
 
-import { ProfileBody, ProfileButtons } from '../components/Design/ProfileBody';
+import { ProfileBody } from '../components/Design/ProfileBody';
 import { FlashList } from '@shopify/flash-list';
 
 const LikeLink = con.Domain.concat(con.allLike);
@@ -66,8 +64,6 @@ const UserScreen = ({ navigation, route }) => {
             setLoading(false);
         }
     };
-
-
 
     const getData = async () => {
         const isMounted = true;

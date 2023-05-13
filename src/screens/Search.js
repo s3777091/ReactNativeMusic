@@ -34,15 +34,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const linkRadio = con.SuggestKey;
 
 
-import {getHash256, getHmac512} from '../../config/encrypt';
+import { getHash256, getHmac512 } from '../../config/encrypt';
 
 const Search = () => {
   const navigation = useNavigation();
 
 
-
   const [TextSearch, setTextSearch] = React.useState('');
-
   const textInputRef = React.useRef(null);
   const [listSuggest, setListSuggest] = React.useState();
 
@@ -78,7 +76,7 @@ const Search = () => {
     var Hash = `ctime=${code}id=${id}version=1.9.24`;
     var sign = getHmac512("/api/v2/song/get/streaming" + getHash256(Hash), "acOrvUS15XRW2o9JksiK1KgQ6Vbds8ZW");
     return "https://zingmp3.vn/api/v2/song/get/streaming" + `?id=${id}&ctime=${code}&version=1.9.24&sig=${sign}&apiKey=X5BM3w8N7MKozC0B85o4KMlzLZKhV00y`;
-}
+  }
 
   const onChangeSong = async (songData) => {
     setSong(songData.title);

@@ -21,13 +21,13 @@ import con from '../../data';
 
 const link = con.Domain.concat(con.SearchLink);
 
-import {getHash256, getHmac512} from '../../config/encrypt';
+import { getHash256, getHmac512 } from '../../config/encrypt';
 
 
 
 const SearchResults = ({ navigation, route }) => {
 
-  const { currentSongData, updateState , showMusicBar} =
+  const { currentSongData, updateState, showMusicBar } =
     React.useContext(Context);
 
   const [song, setSong] = React.useState(currentSongData.title);
@@ -42,7 +42,7 @@ const SearchResults = ({ navigation, route }) => {
     var Hash = `ctime=${code}id=${id}version=1.9.24`;
     var sign = getHmac512("/api/v2/song/get/streaming" + getHash256(Hash), "acOrvUS15XRW2o9JksiK1KgQ6Vbds8ZW");
     return "https://zingmp3.vn/api/v2/song/get/streaming" + `?id=${id}&ctime=${code}&version=1.9.24&sig=${sign}&apiKey=X5BM3w8N7MKozC0B85o4KMlzLZKhV00y`;
-}
+  }
 
   const onChangeSong = async (songData) => {
     setSong(songData.title);
@@ -153,7 +153,7 @@ const SearchResults = ({ navigation, route }) => {
                     />
                   </View>
                 ))}
-                
+
               <View style={{ marginVertical: showMusicBar ? 62 : 42 }}></View>
 
             </View>

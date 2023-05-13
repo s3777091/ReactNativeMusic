@@ -22,8 +22,6 @@ import TwitterSVG from '../assets/images/twitter.svg'
 import CustomButton from '../components/Design/CustomButton';
 
 import { colors, func } from '../constants';
-
-
 import con from '../../data';
 
 const LOGIN_URL = con.Domain.concat(con.Login);
@@ -67,13 +65,10 @@ const LoginScreen = ({ navigation }) => {
             showAlert('Login success', `welcomback ${userEmail}`);
           }
         });
-      
       }
-
     } catch (error) {
       console.error(error);
     }
-
   };
 
   
